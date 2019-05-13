@@ -5,6 +5,7 @@
 
 #include "proteinModel.h"
 #include "mathLib.h"
+#include "curve.h"
 
 ProteinModel::ProteinModel()
 {
@@ -62,46 +63,39 @@ bool ProteinModel::InitializeBuffers(ID3D11Device* device)
     HRESULT result;
     int i;
 
-    // Lesson 1-6 stuff 
-    {
-        // Set the number of vertices in the vertex array.
-        m_vertexCount = 3;
+    {   // tube generator
+        std::vector<std::pair<Vec3, Vec3>> vVertices;
+        std::vector<unsigned int> vIndices;
 
-        // Set the number of indices in the index array.
-        m_indexCount = 3;
 
-        // Create the vertex array.
+        Curve curve;
+        m_tubeBuilder.buildTube(curve, 100, vVertices, vIndices);
+
+        m_vertexCount = vVertices.size();
+        m_indexCount = vIndices.size();
+
         vertices = new VertexType[m_vertexCount];
-        if (!vertices)
-        {
-            return false;
-        }
-
-        // Create the index array.
         indices = new unsigned long[m_indexCount];
-        if (!indices)
+
+        for (int i = 0; i < m_vertexCount; ++i)
         {
-            return false;
+            vertices[i].position = vVertices[i].first.toXMFLOAT3();
+            vertices[i].normal = vVertices[i].second.toXMFLOAT3();
+            vertices[i].color = DirectX::XMFLOAT4(1.0f, 0.3f, 0.3f, 1.0f);
         }
-
-        // Load the vertex array with data.
-        vertices[0].position = DirectX::XMFLOAT3(-1.0f, -1.0f, 0.0f);  // Bottom left.
-        vertices[0].color = DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
-        vertices[0].normal = DirectX::XMFLOAT3(0.0f, 0.0f, -1.0f);
-
-        vertices[1].position = DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f);  // Top center.
-        vertices[1].color = DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
-        vertices[1].normal = DirectX::XMFLOAT3(0.0f, 0.0f, -1.0f);
-
-        vertices[2].position = DirectX::XMFLOAT3(1.0f, -1.0f, 0.0f);  // Bottom right.
-        vertices[2].color = DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
-        vertices[2].normal = DirectX::XMFLOAT3(0.0f, 0.0f, -1.0f);
-
-        // Load the index array with data.
-        indices[0] = 0;  // Bottom left.
-        indices[1] = 1;  // Top middle.
-        indices[2] = 2;  // Bottom right.
+        for (int i = 0; i < m_indexCount; ++i)
+        {
+            indices[i] = vIndices[i];
+        }
     }
+
+
+
+
+
+
+
+
 
     // Set up the description of the static vertex buffer.
     vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;

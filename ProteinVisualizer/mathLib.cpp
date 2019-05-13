@@ -93,6 +93,10 @@ float Vec3::norm() const
     return sqrt(x * x + y * y + z * z);
 }
 
+DirectX::XMFLOAT3 Vec3::toXMFLOAT3()
+{
+    return { x, y, z };
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////
 

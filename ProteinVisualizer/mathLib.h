@@ -3,7 +3,7 @@
 #include <cmath>
 #include <cassert>
 #include <cstdio>
-//#include <DirectXMath.h>
+#include <DirectXMath.h>
 
 constexpr double PI = 3.14159265358979323846;
 constexpr double DELTA = 1e-7;
@@ -30,7 +30,7 @@ struct Vec3
     static Vec3 rotate(const Vec3& rotatingVector, const Vec3& baseVector, const float radians);
     void print();
     float norm() const;
-    //DirectX::XMFLOAT3 toXMFLOAT3();
+    DirectX::XMFLOAT3 toXMFLOAT3();
 };
 
 

@@ -124,6 +124,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="camera.cpp" />
+    <ClCompile Include="curve.cpp" />
     <ClCompile Include="d3d.cpp" />
     <ClCompile Include="graphics.cpp" />
     <ClCompile Include="input.cpp" />
@@ -131,18 +132,23 @@
     <ClCompile Include="lightShader.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mathLib.cpp" />
+    <ClCompile Include="pdbParser.cpp" />
+    <ClCompile Include="proteinData.cpp" />
     <ClCompile Include="proteinModel.cpp" />
     <ClCompile Include="system.cpp" />
     <ClCompile Include="tubeBuilder.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h" />
+    <ClInclude Include="curve.h" />
     <ClInclude Include="d3d.h" />
     <ClInclude Include="graphics.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="light.h" />
     <ClInclude Include="lightShader.h" />
     <ClInclude Include="mathLib.h" />
+    <ClInclude Include="pdbParser.h" />
+    <ClInclude Include="proteinData.h" />
     <ClInclude Include="proteinModel.h" />
     <ClInclude Include="system.h" />
     <ClInclude Include="tubeBuilder.h" />

@@ -15,7 +15,8 @@
 ///////////////////////
 // MY CLASS INCLUDES //
 ///////////////////////
-
+#include "curve.h"
+#include "tubeBuilder.h"
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -55,6 +56,7 @@ private:
     int m_curveStep;
     int m_curveStart;
     int m_curveEnd;
+    TubeBuilder m_tubeBuilder;
 };
 
 #endif
