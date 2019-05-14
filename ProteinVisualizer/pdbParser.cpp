@@ -4,52 +4,47 @@
 #include <sstream>
 #include <string>
 
+const std::string PDBParser::pathToModels = "ProteinModels/";
 
-PDBParser::PDBParser()
+PDBParser& PDBParser::getInstance()
 {
+    static PDBParser instance;
+    return instance;
 }
 
-
-PDBParser::~PDBParser()
+ProteinData PDBParser::parse(const std::string& filename)
 {
-}
-
-
-std::vector<ProteinData::Atom> PDBParser::parse(const char * filename) const
-{
+    std::string combinedPath = pathToModels + filename;
     std::ifstream fin;
-    std::vector<ProteinData::Atom> atoms;
-
-    std::string combinedPath = pathToModels + std::string(filename);
     fin.open(combinedPath);
     if (!fin)
     {
-        return atoms;
+        throw "Invalid protein file input!";
     }
 
     std::string line;
     line.reserve(100);
-
-
     while (std::getline(fin, line))
     {
-        if (line.rfind("ATOM", 0) == 0)
+        if (!line.rfind("ATOM", 0))
         {
-            atoms.emplace_back(parseAtom(line));
+            Atom atom = parseAtom(
+        }
+        else if (!line.rfind("TER", 0))
+        {
+
         }
     }
 
-    return atoms;
 }
 
-
-ProteinData::Atom PDBParser::parseAtom(const std::string& line) const
+Atom PDBParser::parseAtom(const std::string& line)
 {
     int a;
     char * copyLine = new char[line.size() + 2]; // todo: get rid of this copy (or new at least)
     strcpy(copyLine, line.c_str());
 
-    ProteinData::Atom atom;
+    Atom atom;
 
     sscanf
     (

@@ -54,10 +54,10 @@ int ProteinModel::GetIndexCount()
 {
     return m_indexCount;
 }
-
+        
 bool ProteinModel::InitializeBuffers(ID3D11Device* device)
 {
-    VertexType* vertices;
+    DirectXVertex* vertices;
     unsigned long* indices;
     D3D11_BUFFER_DESC vertexBufferDesc, indexBufferDesc;
     D3D11_SUBRESOURCE_DATA vertexData, indexData;
@@ -68,7 +68,7 @@ bool ProteinModel::InitializeBuffers(ID3D11Device* device)
 
 
     {   // wireframe
-        PDBParser parser;
+        PDBParser parser; // todo: static?
         std::vector<ProteinData::Atom> atoms = parser.parse("test.pdb");
         std::vector<ProteinData::Atom> filtered;
         filtered.reserve(128);
@@ -83,7 +83,7 @@ bool ProteinModel::InitializeBuffers(ID3D11Device* device)
 
         m_vertexCount = vVertices.size();
         m_indexCount = vIndices.size();
-        vertices = new VertexType[m_vertexCount];
+        vertices = new DirectXVertex[m_vertexCount];
         indices = new unsigned long[m_indexCount];
 
         for (int i = 0; i < m_vertexCount; ++i)
@@ -137,7 +137,7 @@ bool ProteinModel::InitializeBuffers(ID3D11Device* device)
 
     // Set up the description of the static vertex buffer.
     vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-    vertexBufferDesc.ByteWidth = sizeof(VertexType) * m_vertexCount;
+    vertexBufferDesc.ByteWidth = sizeof(DirectXVertex) * m_vertexCount;
     vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
     vertexBufferDesc.CPUAccessFlags = 0;
     vertexBufferDesc.MiscFlags = 0;
@@ -211,7 +211,7 @@ void ProteinModel::prepareBuffers(ID3D11DeviceContext* deviceContext)
 
 
     // Set vertex buffer stride and offset.
-    stride = sizeof(VertexType);
+    stride = sizeof(DirectXVertex);
     offset = 0;
 
     // Set the vertex buffer to active in the input assembler so it can be rendered.

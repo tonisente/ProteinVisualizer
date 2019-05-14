@@ -25,7 +25,14 @@
 class ProteinModel
 {
 private:
-    struct VertexType
+    struct Vertex
+    {
+        Vec3 position;
+        Vec3 normal;
+        Vec3 color; // alpha of color is always 1
+    };
+
+    struct DirectXVertex
     {
         DirectX::XMFLOAT3 position;
         DirectX::XMFLOAT4 color;

@@ -8,13 +8,19 @@
 class PDBParser
 {
 public:
-    const std::string pathToModels = "ProteinModels/";
-    PDBParser();
-    ~PDBParser();
+    static const std::string pathToModels;
 
-    std::vector<ProteinData::Atom> parse(const char * filename) const;
+    static ProteinData parse(const std::string& filename);
+
+public:
+    static PDBParser& getInstance();
+    PDBParser(const PDBParser&)      = delete;
+    void operator=(const PDBParser&) = delete;
 
 private:
-    ProteinData::Atom parseAtom(const std::string& line) const;
+    static Atom parseAtom(const std::string& line);
+
+private:
+    PDBParser() {};
 };
 

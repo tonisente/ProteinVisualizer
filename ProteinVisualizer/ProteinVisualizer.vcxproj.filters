@@ -54,10 +54,10 @@
     <ClCompile Include="curve.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="proteinData.cpp">
+    <ClCompile Include="pdbParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="pdbParser.cpp">
+    <ClCompile Include="proteinData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
