@@ -1,13 +1,14 @@
 #pragma once
 
 #include "proteinData.h"
-#include "string"
+#include <string>
 #include <vector>
 
 
 class PDBParser
 {
 public:
+    const std::string pathToModels = "ProteinModels/";
     PDBParser();
     ~PDBParser();
 

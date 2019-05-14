@@ -1,7 +1,9 @@
 #pragma once
-#include "curve.h"
-#include "MathLib.h"
 #include <vector>
+
+#include "curve.h"
+#include "mathLib.h"
+#include "proteinData.h"
 
 class TubeBuilder
 {
@@ -10,10 +12,11 @@ public:
     TubeBuilder(unsigned int noSides, float thicknes);
     ~TubeBuilder();
 
-    unsigned int sides = 11;
-    float thicknes = 0.2f;
+    unsigned int sides = 20;
+    float thicknes = 0.5f;
 
-    void buildTube(Curve& curve, const unsigned int noPoints, std::vector<std::pair<Vec3, Vec3>>& vertices, std::vector<unsigned int>& indices) const;
+    void buildCurvedTube(Curve& curve, const unsigned int noPoints, std::vector<std::pair<Vec3, Vec3>>& vertices, std::vector<unsigned int>& indices) const;
+    void buildWireframe(const std::vector<ProteinData::Atom>& atoms, std::vector<std::pair<Vec3, Vec3>>& vertices, std::vector<unsigned int>& indices) const;
 
 private:
     std::vector<std::pair<Vec3, Vec3>> tubeSample(const Vec3 tPrev, const Vec3 t0, const Vec3 t1, const Vec3 tNext) const;

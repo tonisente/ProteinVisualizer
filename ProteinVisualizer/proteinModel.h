@@ -17,7 +17,7 @@
 ///////////////////////
 #include "curve.h"
 #include "tubeBuilder.h"
-
+#include "pdbParser.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Class name: ProteinModel
@@ -57,6 +57,6 @@ private:
     int m_curveStart;
     int m_curveEnd;
     TubeBuilder m_tubeBuilder;
-};
+    };
 
 #endif

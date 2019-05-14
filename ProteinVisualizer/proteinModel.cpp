@@ -2,6 +2,7 @@
 // Filename: proteinModel.cpp
 ////////////////////////////////////////////////////////////////////////////////
 #include <vector>
+#include <algorithm>
 
 #include "proteinModel.h"
 #include "mathLib.h"
@@ -63,17 +64,25 @@ bool ProteinModel::InitializeBuffers(ID3D11Device* device)
     HRESULT result;
     int i;
 
-    {   // tube generator
+
+
+
+    {   // wireframe
+        PDBParser parser;
+        std::vector<ProteinData::Atom> atoms = parser.parse("test.pdb");
+        std::vector<ProteinData::Atom> filtered;
+        filtered.reserve(128);
+        std::copy_if(atoms.begin(), atoms.end(), std::back_inserter(filtered),
+            [](ProteinData::Atom& atom) { return strcmp("CA", atom.name) == 0; });
+        
+
         std::vector<std::pair<Vec3, Vec3>> vVertices;
         std::vector<unsigned int> vIndices;
 
-
-        Curve curve;
-        m_tubeBuilder.buildTube(curve, 100, vVertices, vIndices);
+        m_tubeBuilder.buildWireframe(filtered, vVertices, vIndices);
 
         m_vertexCount = vVertices.size();
         m_indexCount = vIndices.size();
-
         vertices = new VertexType[m_vertexCount];
         indices = new unsigned long[m_indexCount];
 
@@ -88,6 +97,35 @@ bool ProteinModel::InitializeBuffers(ID3D11Device* device)
             indices[i] = vIndices[i];
         }
     }
+
+
+
+
+    //{   // tube generator
+    //    std::vector<std::pair<Vec3, Vec3>> vVertices;
+    //    std::vector<unsigned int> vIndices;
+
+
+    //    Curve curve;
+    //    m_tubeBuilder.buildCurvedTube(curve, 100, vVertices, vIndices);
+
+    //    m_vertexCount = vVertices.size();
+    //    m_indexCount = vIndices.size();
+
+    //    vertices = new VertexType[m_vertexCount];
+    //    indices = new unsigned long[m_indexCount];
+
+    //    for (int i = 0; i < m_vertexCount; ++i)
+    //    {
+    //        vertices[i].position = vVertices[i].first.toXMFLOAT3();
+    //        vertices[i].normal = vVertices[i].second.toXMFLOAT3();
+    //        vertices[i].color = DirectX::XMFLOAT4(1.0f, 0.3f, 0.3f, 1.0f);
+    //    }
+    //    for (int i = 0; i < m_indexCount; ++i)
+    //    {
+    //        indices[i] = vIndices[i];
+    //    }
+    //}
 
 
 

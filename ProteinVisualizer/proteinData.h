@@ -20,5 +20,6 @@ struct Atom
     char segmentID[5];
     char elementSymbol[3];
 };
+
 };
 

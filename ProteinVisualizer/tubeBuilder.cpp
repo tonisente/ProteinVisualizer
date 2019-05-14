@@ -17,9 +17,10 @@ TubeBuilder::~TubeBuilder()
 }
 
 
-void TubeBuilder::buildTube(Curve& curve, const unsigned int noPoints, std::vector<std::pair<Vec3, Vec3>>& vertices, std::vector<unsigned int>& indices) const
+void TubeBuilder::buildCurvedTube(Curve& curve, const unsigned int noPoints, std::vector<std::pair<Vec3, Vec3>>& vertices, std::vector<unsigned int>& indices) const
 {
-    const float sampleLength = 100.0f;
+    // todo: reserve memory for vertices and indices
+    const float sampleLength = 50.0f;// todo: put as func param
 
     Vec3 prevPoint;
     Vec3 p0 = curve(0.0f);
@@ -33,7 +34,7 @@ void TubeBuilder::buildTube(Curve& curve, const unsigned int noPoints, std::vect
         p1 = nextPoint;
         nextPoint = curve((float)i / (float)noPoints * sampleLength);
 
-        std::vector<std::pair<Vec3, Vec3>> tubePiece = tubeSample(prevPoint, p0, p1, nextPoint);
+        std::vector<std::pair<Vec3, Vec3>> tubePiece = tubeSample(p0 - prevPoint, p0, p1, nextPoint - p1);
         unsigned int baseIdx = vertices.size();
 
         for (int j = 0, tubePieceSize = tubePiece.size(); j < tubePieceSize; ++j)
@@ -60,13 +61,68 @@ void TubeBuilder::buildTube(Curve& curve, const unsigned int noPoints, std::vect
     }
 }
 
-
-std::vector<std::pair<Vec3, Vec3>> TubeBuilder::tubeSample(const Vec3 prevPoint, const Vec3 p0, const Vec3 p1, const Vec3 nextPoint) const
+void TubeBuilder::buildWireframe(const std::vector<ProteinData::Atom>& atoms, std::vector<std::pair<Vec3, Vec3>>& vertices, std::vector<unsigned int>& indices) const
 {
-    Vec3 inVec = p0 - prevPoint;
-    Vec3 centralVec = p1 - p0;
-    Vec3 outVec = nextPoint - p1;
+    vertices.reserve(sides * (atoms.size() + 1));
+    indices.reserve(sides * (atoms.size() + 1));
 
+    for (int i = 0, n = atoms.size() - 1; i < n; ++i)
+    {
+        Vec3 p0{ atoms[i].xCoord    , atoms[i].yCoord    , atoms[i].zCoord };
+        Vec3 p1{ atoms[i + 1].xCoord, atoms[i + 1].yCoord, atoms[i + 1].zCoord };
+
+        Vec3 inVec, outVec;
+        inVec = outVec = p1 - p0;
+
+        if (i > 0)
+        {   // update inVec to match previous one
+            Vec3 pPrev{ atoms[i - 1].xCoord, atoms[i - 1].yCoord, atoms[i - 1].zCoord };
+            inVec = p0 - pPrev;
+        }
+        if (i < n - 1)
+        {   // update outVec to match next one
+            Vec3 pNext{ atoms[i + 2].xCoord, atoms[i + 2].yCoord, atoms[i + 2].zCoord };
+            outVec = pNext - p1;
+        }
+
+        // generate vertices
+        std::vector<std::pair<Vec3, Vec3>> tubePiece = tubeSample(inVec, p0, p1, outVec);
+
+        {   // todo: extract this (from previous func too)
+            unsigned int baseIdx = vertices.size();
+
+            for (int j = 0, tubePieceSize = tubePiece.size(); j < tubePieceSize; ++j)
+            {   // todo: use memcpy or push directly in vertices vector?
+                vertices.push_back(tubePiece[j]);
+            }
+
+            // update indices (2 triangles per side)
+            unsigned int mod = 2 * sides; // needed because first tube sample vertices are also used for last triangle
+            for (int k = 0; k < sides; ++k)
+            {
+                unsigned int vIndex = k * 2;
+
+                // "lower" triangle
+                indices.push_back(vIndex + baseIdx);
+                indices.push_back(vIndex + 1 + baseIdx);
+                indices.push_back((vIndex + 2) % mod + baseIdx);
+
+                // "upper" triangle
+                indices.push_back(vIndex + 1 + baseIdx);
+                indices.push_back((vIndex + 3) % mod + baseIdx);
+                indices.push_back((vIndex + 2) % mod + baseIdx);
+            }
+        }
+
+    }
+}
+
+
+
+
+std::vector<std::pair<Vec3, Vec3>> TubeBuilder::tubeSample(const Vec3 inVec, const Vec3 p0, const Vec3 p1, const Vec3 outVec) const
+{
+    Vec3 centralVec = p1 - p0;
     Vec3 radiusVec = perpendicularVector(centralVec);
 
     Plane plane1{ (inVec + centralVec) / 2, p0 };
