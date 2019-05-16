@@ -22,20 +22,39 @@ ProteinData PDBParser::parse(const std::string& filename)
         throw "Invalid protein file input!";
     }
 
+    // variables need for parsing
+    ProteinData proteinData;
+    Chain chain;
+    Model model;
     std::string line;
     line.reserve(100);
+
     while (std::getline(fin, line))
     {
         if (!line.rfind("ATOM", 0))
         {
-            Atom atom = parseAtom(
+            Atom atom = parseAtom(line);
+            chain.push_back(atom);
         }
         else if (!line.rfind("TER", 0))
         {
-
+            model.emplace_back(std::move(chain));
+            chain = Chain();
+            chain.reserve(100); // reserve some space; (todo: magic number)
+        }
+        else if (!line.rfind("MODEL", 0))
+        {
+            chain = Chain();
+            model = Model();
+        }
+        else if (!line.rfind("ENDMDL", 0))
+        {
+            model.emplace_back(std::move(chain));
+            proteinData.models.emplace_back(std::move(model));
         }
     }
-
+    
+    return proteinData;
 }
 
 Atom PDBParser::parseAtom(const std::string& line)

@@ -68,18 +68,20 @@ bool ProteinModel::InitializeBuffers(ID3D11Device* device)
 
 
     {   // wireframe
-        PDBParser parser; // todo: static?
-        std::vector<ProteinData::Atom> atoms = parser.parse("test.pdb");
-        std::vector<ProteinData::Atom> filtered;
-        filtered.reserve(128);
-        std::copy_if(atoms.begin(), atoms.end(), std::back_inserter(filtered),
-            [](ProteinData::Atom& atom) { return strcmp("CA", atom.name) == 0; });
+        PDBParser& parser = PDBParser::getInstance();
+        ProteinData proteinData = parser.parse("test.pdb");
+        //Model& model0 = proteinData.models[0];
+        //Chain& chain1 = model0[0];
+        //Chain filtered;
+        //filtered.reserve(128);
+        //std::copy_if(chain1.begin(), chain1.end(), std::back_inserter(filtered),
+        //    [](Atom& atom) { return strcmp("CA", atom.name) == 0; });
         
 
         std::vector<std::pair<Vec3, Vec3>> vVertices;
         std::vector<unsigned int> vIndices;
 
-        m_tubeBuilder.buildWireframe(filtered, vVertices, vIndices);
+        m_tubeBuilder.buildWireframe(proteinData, vVertices, vIndices);
 
         m_vertexCount = vVertices.size();
         m_indexCount = vIndices.size();

@@ -1,4 +1,5 @@
 #include "TubeBuilder.h"
+#include <algorithm>
 
 
 TubeBuilder::TubeBuilder()
@@ -61,9 +62,16 @@ void TubeBuilder::buildCurvedTube(Curve& curve, const unsigned int noPoints, std
     }
 }
 
-void TubeBuilder::buildWireframe(const std::vector<ProteinData::Atom>& atoms, std::vector<std::pair<Vec3, Vec3>>& vertices, std::vector<unsigned int>& indices) const
+void TubeBuilder::buildWireframe(const ProteinData& data, std::vector<std::pair<Vec3, Vec3>>& vertices, std::vector<unsigned int>& indices) const
 {
-    vertices.reserve(sides * (atoms.size() + 1));
+    Chain chain = data.models[0][0];
+    Chain atoms;
+    atoms.reserve(128);
+    std::copy_if(chain.begin(), chain.end(), std::back_inserter(atoms),
+        [](Atom& atom) { return strcmp("CA", atom.name) == 0; });
+
+
+    vertices.reserve(sides * (atoms.size() + 1)); // every tube piece in wireframe needs its own vertices; 
     indices.reserve(sides * (atoms.size() + 1));
 
     for (int i = 0, n = atoms.size() - 1; i < n; ++i)
@@ -113,7 +121,6 @@ void TubeBuilder::buildWireframe(const std::vector<ProteinData::Atom>& atoms, st
                 indices.push_back((vIndex + 2) % mod + baseIdx);
             }
         }
-
     }
 }
 
