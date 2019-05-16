@@ -70,6 +70,7 @@ bool ProteinModel::InitializeBuffers(ID3D11Device* device)
     {   // wireframe
         PDBParser& parser = PDBParser::getInstance();
         ProteinData proteinData = parser.parse("test.pdb");
+
         //Model& model0 = proteinData.models[0];
         //Chain& chain1 = model0[0];
         //Chain filtered;
@@ -77,26 +78,32 @@ bool ProteinModel::InitializeBuffers(ID3D11Device* device)
         //std::copy_if(chain1.begin(), chain1.end(), std::back_inserter(filtered),
         //    [](Atom& atom) { return strcmp("CA", atom.name) == 0; });
         
+        //std::vector<std::pair<Vec3, Vec3>> vVertices;
+        //std::vector<unsigned int> vIndices;
+        //m_tubeBuilder.buildWireframe(proteinData, vVertices, vIndices);
 
-        std::vector<std::pair<Vec3, Vec3>> vVertices;
-        std::vector<unsigned int> vIndices;
+        std::vector<Vertex> generatedVertecis;
+        std::vector<unsigned int> generatedIndices;
 
-        m_tubeBuilder.buildWireframe(proteinData, vVertices, vIndices);
+        ProteinBuilder proteinBuilder;
+        proteinBuilder.buildProtein(generatedVertecis, generatedIndices, proteinData);
 
-        m_vertexCount = vVertices.size();
-        m_indexCount = vIndices.size();
+        m_vertexCount = generatedVertecis.size();
+        m_indexCount = generatedIndices.size();
         vertices = new DirectXVertex[m_vertexCount];
         indices = new unsigned long[m_indexCount];
 
         for (int i = 0; i < m_vertexCount; ++i)
         {
-            vertices[i].position = vVertices[i].first.toXMFLOAT3();
-            vertices[i].normal = vVertices[i].second.toXMFLOAT3();
-            vertices[i].color = DirectX::XMFLOAT4(1.0f, 0.3f, 0.3f, 1.0f);
+            Vertex& vertex{ generatedVertecis[i] };
+            vertices[i].position = vertex.position.toXMFLOAT3();
+            vertices[i].normal = vertex.normal.toXMFLOAT3();
+            Vec3& color = vertex.color;
+            vertices[i].color = DirectX::XMFLOAT4(color.x, color.y, color.z, 1.0f);
         }
         for (int i = 0; i < m_indexCount; ++i)
         {
-            indices[i] = vIndices[i];
+            indices[i] = generatedIndices[i];
         }
     }
 

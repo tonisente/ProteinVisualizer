@@ -137,6 +137,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mathLib.cpp" />
     <ClCompile Include="pdbParser.cpp" />
+    <ClCompile Include="proteinBuilder.cpp" />
     <ClCompile Include="proteinData.cpp" />
     <ClCompile Include="proteinModel.cpp" />
     <ClCompile Include="system.cpp" />
@@ -152,6 +153,7 @@
     <ClInclude Include="lightShader.h" />
     <ClInclude Include="mathLib.h" />
     <ClInclude Include="pdbParser.h" />
+    <ClInclude Include="proteinBuilder.h" />
     <ClInclude Include="proteinData.h" />
     <ClInclude Include="proteinModel.h" />
     <ClInclude Include="system.h" />

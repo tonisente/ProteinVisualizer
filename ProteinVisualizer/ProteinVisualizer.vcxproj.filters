@@ -60,6 +60,9 @@
     <ClCompile Include="proteinData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="proteinBuilder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mathLib.h">
@@ -99,6 +102,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="proteinData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="proteinBuilder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
