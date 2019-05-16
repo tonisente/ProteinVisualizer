@@ -14,11 +14,10 @@ struct Vertex
 class ProteinBuilder
 {
 public:
-    
     void buildProtein(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices, const ProteinData& proteinData) const;
 
 private:
-    void bufferCombinder(std::vector<Vertex>& destBuff, const std::vector<Vertex>& srcBuffer, std::vector<UINT> )
+    void bufferCombinder(std::vector<Vertex>& destVertex, const std::vector<Vertex>& srcVertex, std::vector<unsigned int>& destIndex, const std::vector<unsigned int> srdIndex);
 
     TubeBuilder m_tubeBuilder;
     

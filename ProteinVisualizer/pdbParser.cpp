@@ -39,12 +39,11 @@ ProteinData PDBParser::parse(const std::string& filename)
         else if (!line.rfind("TER", 0))
         {
             model.emplace_back(std::move(chain));
-            chain = Chain();
-            chain.reserve(100); // reserve some space; (todo: magic number)
         }
         else if (!line.rfind("MODEL", 0))
         {
             chain = Chain();
+            chain.reserve(100); // reserve some space; (todo: magic number)
             model = Model();
         }
         else if (!line.rfind("ENDMDL", 0))

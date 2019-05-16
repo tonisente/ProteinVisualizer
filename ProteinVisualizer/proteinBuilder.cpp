@@ -1,12 +1,12 @@
 #include "proteinBuilder.h"
 
-
-
-ProteinBuilder::ProteinBuilder()
+void ProteinBuilder::buildProtein(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices, const ProteinData& proteinData) const
 {
+    // build wireframe
+
+
 }
 
 
-ProteinBuilder::~ProteinBuilder()
-{
-}
+
+
