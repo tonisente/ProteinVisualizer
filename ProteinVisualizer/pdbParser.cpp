@@ -46,9 +46,9 @@ ProteinData PDBParser::parse(const std::string& filename)
             chain.reserve(100); // reserve some space; (todo: magic number)
             model = Model();
         }
-        else if (!line.rfind("ENDMDL", 0))
+        else if (!line.rfind("ENDMDL", 0) || !line.rfind("END", 0))
         {
-            model.emplace_back(std::move(chain));
+            //model.emplace_back(std::move(chain));
             proteinData.models.emplace_back(std::move(model));
         }
     }

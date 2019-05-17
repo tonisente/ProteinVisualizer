@@ -64,29 +64,15 @@ bool ProteinModel::InitializeBuffers(ID3D11Device* device)
     HRESULT result;
     int i;
 
-
-
-
-    {   // wireframe
+    {   // build wireframe
         PDBParser& parser = PDBParser::getInstance();
-        ProteinData proteinData = parser.parse("test.pdb");
-
-        //Model& model0 = proteinData.models[0];
-        //Chain& chain1 = model0[0];
-        //Chain filtered;
-        //filtered.reserve(128);
-        //std::copy_if(chain1.begin(), chain1.end(), std::back_inserter(filtered),
-        //    [](Atom& atom) { return strcmp("CA", atom.name) == 0; });
-        
-        //std::vector<std::pair<Vec3, Vec3>> vVertices;
-        //std::vector<unsigned int> vIndices;
-        //m_tubeBuilder.buildWireframe(proteinData, vVertices, vIndices);
-
+        //ProteinData proteinData = parser.parse("test.pdb");
+        ProteinData proteinData = parser.parse("6gms.pdb");
         std::vector<Vertex> generatedVertecis;
         std::vector<unsigned int> generatedIndices;
 
         ProteinBuilder proteinBuilder;
-        proteinBuilder.buildProtein(generatedVertecis, generatedIndices, proteinData);
+        proteinBuilder.buildProtein(proteinData, ProteinBuilder::BuildType::WIREFRAME, generatedVertecis, generatedIndices);
 
         m_vertexCount = generatedVertecis.size();
         m_indexCount = generatedIndices.size();
@@ -107,10 +93,7 @@ bool ProteinModel::InitializeBuffers(ID3D11Device* device)
         }
     }
 
-
-
-
-    //{   // tube generator
+    //{   // curved tube generator
     //    std::vector<std::pair<Vec3, Vec3>> vVertices;
     //    std::vector<unsigned int> vIndices;
 
@@ -135,14 +118,6 @@ bool ProteinModel::InitializeBuffers(ID3D11Device* device)
     //        indices[i] = vIndices[i];
     //    }
     //}
-
-
-
-
-
-
-
-
 
     // Set up the description of the static vertex buffer.
     vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;

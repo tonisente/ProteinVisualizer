@@ -18,7 +18,7 @@ TubeBuilder::~TubeBuilder()
 }
 
 
-void TubeBuilder::buildCurvedTube(Curve& curve, const unsigned int noPoints, std::vector<std::pair<Vec3, Vec3>>& vertices, std::vector<unsigned int>& indices) const
+void TubeBuilder::buildCurvedWireframe(Curve& curve, const unsigned int noPoints, std::vector<Vertex>& vertices, std::vector<unsigned int>& indices) const
 {
     // todo: reserve memory for vertices and indices
     const float sampleLength = 50.0f;// todo: put as func param
@@ -35,7 +35,7 @@ void TubeBuilder::buildCurvedTube(Curve& curve, const unsigned int noPoints, std
         p1 = nextPoint;
         nextPoint = curve((float)i / (float)noPoints * sampleLength);
 
-        std::vector<std::pair<Vec3, Vec3>> tubePiece = tubeSample(p0 - prevPoint, p0, p1, nextPoint - p1);
+        std::vector<Vertex> tubePiece = tubeSample(p0 - prevPoint, p0, p1, nextPoint - p1);
         unsigned int baseIdx = vertices.size();
 
         for (int j = 0, tubePieceSize = tubePiece.size(); j < tubePieceSize; ++j)
@@ -62,15 +62,8 @@ void TubeBuilder::buildCurvedTube(Curve& curve, const unsigned int noPoints, std
     }
 }
 
-void TubeBuilder::buildWireframe(const ProteinData& data, std::vector<std::pair<Vec3, Vec3>>& vertices, std::vector<unsigned int>& indices) const
+void TubeBuilder::buildWireframe(const Chain& atoms, std::vector<Vertex>& vertices, std::vector<unsigned int>& indices) const
 {
-    Chain chain = data.models[0][0];
-    Chain atoms;
-    atoms.reserve(128);
-    std::copy_if(chain.begin(), chain.end(), std::back_inserter(atoms),
-        [](Atom& atom) { return strcmp("CA", atom.name) == 0; });
-
-
     vertices.reserve(sides * (atoms.size() + 1)); // every tube piece in wireframe needs its own vertices; 
     indices.reserve(sides * (atoms.size() + 1));
 
@@ -94,7 +87,7 @@ void TubeBuilder::buildWireframe(const ProteinData& data, std::vector<std::pair<
         }
 
         // generate vertices
-        std::vector<std::pair<Vec3, Vec3>> tubePiece = tubeSample(inVec, p0, p1, outVec);
+        std::vector<Vertex> tubePiece = tubeSample(inVec, p0, p1, outVec);
 
         {   // todo: extract this (from previous func too)
             unsigned int baseIdx = vertices.size();
@@ -127,7 +120,7 @@ void TubeBuilder::buildWireframe(const ProteinData& data, std::vector<std::pair<
 
 
 
-std::vector<std::pair<Vec3, Vec3>> TubeBuilder::tubeSample(const Vec3 inVec, const Vec3 p0, const Vec3 p1, const Vec3 outVec) const
+std::vector<Vertex> TubeBuilder::tubeSample(const Vec3 inVec, const Vec3 p0, const Vec3 p1, const Vec3 outVec) const
 {
     Vec3 centralVec = p1 - p0;
     Vec3 radiusVec = perpendicularVector(centralVec);
@@ -135,7 +128,7 @@ std::vector<std::pair<Vec3, Vec3>> TubeBuilder::tubeSample(const Vec3 inVec, con
     Plane plane1{ (inVec + centralVec) / 2, p0 };
     Plane plane2{ (centralVec + outVec) / 2, p1 };
 
-    std::vector<std::pair<Vec3, Vec3>> vertices;
+    std::vector<Vertex> vertices;
     vertices.reserve(sides * 2);
 
     for (int j = 0; j < sides; ++j)
@@ -148,12 +141,14 @@ std::vector<std::pair<Vec3, Vec3>> TubeBuilder::tubeSample(const Vec3 inVec, con
         // vertex on previous plane
         Vec3 lowerPoint = linePlaneIntersection(sideLine, plane1);
         Vec3 lowerPointNormal = lowerPoint - p0;
-        vertices.push_back(std::make_pair(lowerPoint, lowerPointNormal));
+        Vertex v{ lowerPoint, lowerPointNormal, color };
+        vertices.push_back(v);
 
         // vertex on next plane
         Vec3 upperPoint = linePlaneIntersection(sideLine, plane2);
         Vec3 upperPointNormal = upperPoint - p1;
-        vertices.push_back(std::make_pair(upperPoint, upperPointNormal));
+        v = { upperPoint, upperPointNormal, color };
+        vertices.push_back(v);
     }
 
     return vertices;

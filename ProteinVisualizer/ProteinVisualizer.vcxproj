@@ -158,6 +158,7 @@
     <ClInclude Include="proteinModel.h" />
     <ClInclude Include="system.h" />
     <ClInclude Include="tubeBuilder.h" />
+    <ClInclude Include="vertex.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="ps_phong.hlsl">

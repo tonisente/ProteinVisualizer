@@ -1,26 +1,28 @@
 #pragma once
 #include <vector>
 
+#include "vertex.h"
 #include "proteinData.h"
 #include "tubeBuilder.h"
 
-struct Vertex
-{
-    Vec3 position;
-    Vec3 normal;
-    Vec3 color; // alpha of color is always 1
-};
 
 class ProteinBuilder
 {
 public:
-    void buildProtein(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices, const ProteinData& proteinData) const;
+    enum class BuildType
+    {
+        WIREFRAME,
+        CURVEDWIREFRAME,
+        TERTIARY
+    };
+
+    void buildProtein(const ProteinData& proteinData, BuildType type, std::vector<Vertex>& vertices, std::vector<unsigned int>& indices);
 
 private:
-    void bufferCombinder(std::vector<Vertex>& destVertex, const std::vector<Vertex>& srcVertex, std::vector<unsigned int>& destIndex, const std::vector<unsigned int> srdIndex);
+    void constructCompleteWireframe(const ProteinData& proteinData, std::vector<Vertex>& vertices, std::vector<unsigned int>& indices);
+    void bufferCombinder(std::vector<Vertex>& destVertex, const std::vector<Vertex>& srcVertex, std::vector<unsigned int>& destIndex, const std::vector<unsigned int>& srcIndex);
 
     TubeBuilder m_tubeBuilder;
-    
-
+    unsigned int m_maxIndex = 0;
 };
 
