@@ -12,15 +12,14 @@ public:
 
     static ProteinData parse(const std::string& filename);
 
-public:
     static PDBParser& getInstance();
     PDBParser(const PDBParser&)      = delete;
     void operator=(const PDBParser&) = delete;
 
 private:
     static Atom parseAtom(const std::string& line);
+    static Helix parseHelix(const std::string& line);
 
-private:
     PDBParser() {};
 };
 

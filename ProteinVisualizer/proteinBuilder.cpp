@@ -8,20 +8,16 @@ void ProteinBuilder::buildProtein(const ProteinData& proteinData,  BuildType typ
     switch (type)
     {
     case BuildType::WIREFRAME:
-    {
-        constructCompleteWireframe(proteinData, vertices, indices);
-        break;
-    }
     case BuildType::CURVEDWIREFRAME:
     {
-        constructCompleteCurvedWireframe(proteinData, vertices, indices);
+        constructCompleteWireframe(proteinData, type, vertices, indices);
         break;
     }
     }
 }
 
 
-void ProteinBuilder::constructCompleteWireframe(const ProteinData& proteinData, std::vector<Vertex>& vertices, std::vector<uint>& indices)
+void ProteinBuilder::constructCompleteWireframe(const ProteinData& proteinData, BuildType type, std::vector<Vertex>& vertices, std::vector<uint>& indices)
 {
     const Model& model = proteinData.models[0]; // todo: choose which model
     for (int i = 0; i < model.size(); ++i)
@@ -31,24 +27,14 @@ void ProteinBuilder::constructCompleteWireframe(const ProteinData& proteinData, 
         std::vector<Vertex> wireframeVertices;
         std::vector<uint> wireframeIndices;
 
-        m_tubeBuilder.buildWireframe(atoms, wireframeVertices, wireframeIndices);
-
-        bufferCombinder(vertices, wireframeVertices, indices, wireframeIndices);
-    }
-}
-
-
-void ProteinBuilder::constructCompleteCurvedWireframe(const ProteinData& proteinData, std::vector<Vertex>& vertices, std::vector<uint>& indices)
-{
-    const Model& model = proteinData.models[0];
-    for (int i = 0; i < model.size(); ++i)
-    {
-        std::vector<Vec3> atoms = filterChain(model[i]);
-
-        std::vector<Vertex> wireframeVertices;
-        std::vector<uint> wireframeIndices;
-
-        m_tubeBuilder.buildCurvedWireframe(atoms, vertices, indices);
+        if (type == BuildType::WIREFRAME)
+        {
+            m_tubeBuilder.buildWireframe(atoms, wireframeVertices, wireframeIndices);
+        }
+        else if (type == BuildType::CURVEDWIREFRAME)
+        {
+            m_tubeBuilder.buildCurvedWireframe(atoms, wireframeVertices, wireframeIndices);
+        }
 
         bufferCombinder(vertices, wireframeVertices, indices, wireframeIndices);
     }

@@ -11,7 +11,7 @@ PDBParser& PDBParser::getInstance()
     static PDBParser instance;
     return instance;
 }
-
+ 
 ProteinData PDBParser::parse(const std::string& filename)
 {
     std::string combinedPath = pathToModels + filename;
@@ -28,6 +28,8 @@ ProteinData PDBParser::parse(const std::string& filename)
     Model model;
     std::string line;
     line.reserve(100);
+    std::vector<Helix> helices;
+    std::vector<Sheet> sheets;
 
     while (std::getline(fin, line))
     {
@@ -48,25 +50,28 @@ ProteinData PDBParser::parse(const std::string& filename)
         }
         else if (!line.rfind("ENDMDL", 0) || !line.rfind("END", 0))
         {
-            //model.emplace_back(std::move(chain));
             proteinData.models.emplace_back(std::move(model));
+        }
+        else if (!line.rfind("HELIX", 0))
+        {
+            //Helix helix = parseHelix(line);
+            //helices.push_back(helix);            
         }
     }
     
     return proteinData;
 }
-
+ 
 Atom PDBParser::parseAtom(const std::string& line)
 {
-    int a;
-    char * copyLine = new char[line.size() + 2]; // todo: get rid of this copy (or new at least)
-    strcpy(copyLine, line.c_str());
+    //char * copyLine = new char[line.size() + 2]; // todo: get rid of this copy (or new at least)
+    //strcpy(copyLine, line.c_str());
 
     Atom atom;
 
     sscanf
     (
-        copyLine,
+        line.c_str(),
         "ATOM "\
         "%6d"\
         "%4s"\
@@ -98,10 +103,51 @@ Atom PDBParser::parseAtom(const std::string& line)
         atom.elementSymbol
     );
 
-    delete [] copyLine;
+    //delete [] copyLine;
+    atom.xCoord = -atom.xCoord;
+    atom.yCoord = -atom.yCoord;
+    atom.zCoord = -atom.zCoord;
     return atom;
 }
 
 
+Helix PDBParser::parseHelix(const std::string& line)
+{
+    Helix helix;
+    //sscanf
+    //(
+    //    line.c_str(),
+    //    "ATOM "\
+    //    "%6d"\
+    //    "%4s"\
+    //    "%c"\
+    //    "%3s "\
+    //    "%c"\
+    //    "%3d"\
+    //    "%c"\
+    //    "%f"\
+    //    "%f"\
+    //    "%f"\
+    //    "%f"\
+    //    "%f"\
+    //    "      %4s"\
+    //    "%2s",
+    //    &atom.serialNumber,
+    //    atom.name,
+    //    &atom.alternateLocationIndicator,
+    //    atom.residueName,
+    //    &atom.chainID,
+    //    &atom.residueSeqNumber,
+    //    &atom.codeForInsertion,
+    //    &atom.xCoord,
+    //    &atom.yCoord,
+    //    &atom.zCoord,
+    //    &atom.occupancy,
+    //    &atom.temperatureFactor,
+    //    atom.segmentID,
+    //    atom.elementSymbol
+    //);
 
-
+    helix.codeForInsertion = 'a';
+    return helix;
+}

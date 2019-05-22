@@ -64,39 +64,10 @@ bool ProteinModel::InitializeBuffers(ID3D11Device* device)
     HRESULT result;
     int i;
 
-    //{   // build wireframe
-    //    PDBParser& parser = PDBParser::getInstance();
-    //    //ProteinData proteinData = parser.parse("test.pdb");
-    //    ProteinData proteinData = parser.parse("2hiu.pdb");
-    //    std::vector<Vertex> generatedVertecis;
-    //    std::vector<unsigned int> generatedIndices;
-
-    //    ProteinBuilder proteinBuilder;
-    //    proteinBuilder.buildProtein(proteinData, ProteinBuilder::BuildType::WIREFRAME, generatedVertecis, generatedIndices);
-
-    //    m_vertexCount = generatedVertecis.size();
-    //    m_indexCount = generatedIndices.size();
-    //    vertices = new DirectXVertex[m_vertexCount];
-    //    indices = new unsigned long[m_indexCount];
-
-    //    for (int i = 0; i < m_vertexCount; ++i)
-    //    {
-    //        Vertex& vertex{ generatedVertecis[i] };
-    //        vertices[i].position = vertex.position.toXMFLOAT3();
-    //        vertices[i].normal = vertex.normal.toXMFLOAT3();
-    //        Vec3& color = vertex.color;
-    //        vertices[i].color = DirectX::XMFLOAT4(color.x, color.y, color.z, 1.0f);
-    //    }
-    //    for (int i = 0; i < m_indexCount; ++i)
-    //    {
-    //        indices[i] = generatedIndices[i];
-    //    }
-    //}
-
-    {   // build curved wireframe
+    {   // build model
         PDBParser& parser = PDBParser::getInstance();
-        //ProteinData proteinData = parser.parse("test.pdb");
         ProteinData proteinData = parser.parse("2hiu.pdb");
+
         std::vector<Vertex> generatedVertecis;
         std::vector<unsigned int> generatedIndices;
 
@@ -122,36 +93,6 @@ bool ProteinModel::InitializeBuffers(ID3D11Device* device)
         }
     }
 
-
-
-
-
-
-    //{   // curved tube generator
-    //    std::vector<std::pair<Vec3, Vec3>> vVertices;
-    //    std::vector<unsigned int> vIndices;
-
-
-    //    Curve curve;
-    //    m_tubeBuilder.buildCurvedTube(curve, 100, vVertices, vIndices);
-
-    //    m_vertexCount = vVertices.size();
-    //    m_indexCount = vIndices.size();
-
-    //    vertices = new VertexType[m_vertexCount];
-    //    indices = new unsigned long[m_indexCount];
-
-    //    for (int i = 0; i < m_vertexCount; ++i)
-    //    {
-    //        vertices[i].position = vVertices[i].first.toXMFLOAT3();
-    //        vertices[i].normal = vVertices[i].second.toXMFLOAT3();
-    //        vertices[i].color = DirectX::XMFLOAT4(1.0f, 0.3f, 0.3f, 1.0f);
-    //    }
-    //    for (int i = 0; i < m_indexCount; ++i)
-    //    {
-    //        indices[i] = vIndices[i];
-    //    }
-    //}
 
     // Set up the description of the static vertex buffer.
     vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
