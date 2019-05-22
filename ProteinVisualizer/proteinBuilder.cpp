@@ -2,7 +2,8 @@
 
 #include <algorithm>
 
-void ProteinBuilder::buildProtein(const ProteinData& proteinData,  BuildType type, std::vector<Vertex>& vertices, std::vector<unsigned int>& indices)
+
+void ProteinBuilder::buildProtein(const ProteinData& proteinData,  BuildType type, std::vector<Vertex>& vertices, std::vector<uint>& indices)
 {
     switch (type)
     {
@@ -11,23 +12,24 @@ void ProteinBuilder::buildProtein(const ProteinData& proteinData,  BuildType typ
         constructCompleteWireframe(proteinData, vertices, indices);
         break;
     }
+    case BuildType::CURVEDWIREFRAME:
+    {
+        constructCompleteCurvedWireframe(proteinData, vertices, indices);
+        break;
+    }
     }
 }
 
 
-void ProteinBuilder::constructCompleteWireframe(const ProteinData& proteinData, std::vector<Vertex>& vertices, std::vector<unsigned int>& indices)
+void ProteinBuilder::constructCompleteWireframe(const ProteinData& proteinData, std::vector<Vertex>& vertices, std::vector<uint>& indices)
 {
     const Model& model = proteinData.models[0]; // todo: choose which model
     for (int i = 0; i < model.size(); ++i)
     {   
-        Chain chain = model[i];
-        Chain atoms;
-        atoms.reserve(128);
-        std::copy_if(chain.begin(), chain.end(), std::back_inserter(atoms),
-            [](Atom& atom) { return strcmp("CA", atom.name) == 0; });
+        std::vector<Vec3> atoms = filterChain(model[i]);
 
         std::vector<Vertex> wireframeVertices;
-        std::vector<unsigned int> wireframeIndices;
+        std::vector<uint> wireframeIndices;
 
         m_tubeBuilder.buildWireframe(atoms, wireframeVertices, wireframeIndices);
 
@@ -36,12 +38,24 @@ void ProteinBuilder::constructCompleteWireframe(const ProteinData& proteinData, 
 }
 
 
-void ProteinBuilder::bufferCombinder(std::vector<Vertex>& destVertex, const std::vector<Vertex>& srcVertex, std::vector<unsigned int>& destIndex, const std::vector<unsigned int>& srcIndex)
+void ProteinBuilder::constructCompleteCurvedWireframe(const ProteinData& proteinData, std::vector<Vertex>& vertices, std::vector<uint>& indices)
+{
+    const Model& model = proteinData.models[0];
+    std::vector<Vec3> atoms = filterChain(model[0]);
+
+    std::vector<Vertex> wireframeVertices;
+    std::vector<uint> wireframeIndices;
+
+    m_tubeBuilder.buildCurvedWireframe(atoms, vertices, indices);
+}
+
+
+void ProteinBuilder::bufferCombinder(std::vector<Vertex>& destVertex, const std::vector<Vertex>& srcVertex, std::vector<uint>& destIndex, const std::vector<uint>& srcIndex)
 {
     // todo: memcopy?
     destVertex.insert(destVertex.end(), srcVertex.begin(), srcVertex.end());
     destIndex.reserve(destIndex.size() + srcIndex.size());
-    unsigned int newMaxIdx = 0;
+    uint newMaxIdx = 0;
     for (const auto idx : srcIndex)
     {
         auto x = m_maxIndex + idx;
@@ -51,6 +65,22 @@ void ProteinBuilder::bufferCombinder(std::vector<Vertex>& destVertex, const std:
     m_maxIndex = newMaxIdx + 1;
 }
 
+
+std::vector<Vec3> ProteinBuilder::filterChain(const Chain& chain) const
+{
+    std::vector<Vec3> atomPositions;
+    atomPositions.reserve(128);
+
+    for (const Atom atom : chain)
+    {
+        if (strcmp("CA", atom.name) == 0)
+        {
+            atomPositions.push_back(Vec3(atom.xCoord, atom.yCoord, atom.zCoord));
+        }
+    }
+
+    return atomPositions;
+}
 
 
 

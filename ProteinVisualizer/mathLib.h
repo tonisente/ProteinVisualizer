@@ -26,6 +26,7 @@ struct Vec3
     Vec3 operator+(const Vec3& other) const;
     Vec3 operator-(const Vec3& other) const;
     Vec3 normalized() const;
+    Vec3 opposite(const Vec3& center) const;
     static Vec3 cross(const Vec3& a, const Vec3& b);
     static Vec3 rotate(const Vec3& rotatingVector, const Vec3& baseVector, const float radians);
     void print();

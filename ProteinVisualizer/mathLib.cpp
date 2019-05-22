@@ -4,14 +4,12 @@
 Vec3::Vec3()
 {}
 
-
 Vec3::Vec3(const float a, const float b, const float c) :
     x{ a },
     y{ b },
     z{ c }
 {
 }
-
 
 Vec3 Vec3::operator=(const Vec3& other)
 {
@@ -21,7 +19,6 @@ Vec3 Vec3::operator=(const Vec3& other)
 
     return *this;
 }
-
 
 float operator*(const Vec3& a, const Vec3& b)
 {
@@ -62,6 +59,13 @@ Vec3 Vec3::normalized() const
 {
     float param = std::sqrt(x * x + y * y + z * z);
     return { x / param, y / param, z / param };
+}
+
+Vec3 Vec3::opposite(const Vec3& center) const
+{
+    Vec3 centralized = *this - center;
+    Vec3 oppositePoint = center - centralized;
+    return oppositePoint;
 }
 
 Vec3 Vec3::cross(const Vec3& a, const Vec3& b)

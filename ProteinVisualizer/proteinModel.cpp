@@ -64,7 +64,36 @@ bool ProteinModel::InitializeBuffers(ID3D11Device* device)
     HRESULT result;
     int i;
 
-    {   // build wireframe
+    //{   // build wireframe
+    //    PDBParser& parser = PDBParser::getInstance();
+    //    //ProteinData proteinData = parser.parse("test.pdb");
+    //    ProteinData proteinData = parser.parse("6gms.pdb");
+    //    std::vector<Vertex> generatedVertecis;
+    //    std::vector<unsigned int> generatedIndices;
+
+    //    ProteinBuilder proteinBuilder;
+    //    proteinBuilder.buildProtein(proteinData, ProteinBuilder::BuildType::WIREFRAME, generatedVertecis, generatedIndices);
+
+    //    m_vertexCount = generatedVertecis.size();
+    //    m_indexCount = generatedIndices.size();
+    //    vertices = new DirectXVertex[m_vertexCount];
+    //    indices = new unsigned long[m_indexCount];
+
+    //    for (int i = 0; i < m_vertexCount; ++i)
+    //    {
+    //        Vertex& vertex{ generatedVertecis[i] };
+    //        vertices[i].position = vertex.position.toXMFLOAT3();
+    //        vertices[i].normal = vertex.normal.toXMFLOAT3();
+    //        Vec3& color = vertex.color;
+    //        vertices[i].color = DirectX::XMFLOAT4(color.x, color.y, color.z, 1.0f);
+    //    }
+    //    for (int i = 0; i < m_indexCount; ++i)
+    //    {
+    //        indices[i] = generatedIndices[i];
+    //    }
+    //}
+
+    {   // build curved wireframe
         PDBParser& parser = PDBParser::getInstance();
         //ProteinData proteinData = parser.parse("test.pdb");
         ProteinData proteinData = parser.parse("6gms.pdb");
@@ -72,7 +101,7 @@ bool ProteinModel::InitializeBuffers(ID3D11Device* device)
         std::vector<unsigned int> generatedIndices;
 
         ProteinBuilder proteinBuilder;
-        proteinBuilder.buildProtein(proteinData, ProteinBuilder::BuildType::WIREFRAME, generatedVertecis, generatedIndices);
+        proteinBuilder.buildProtein(proteinData, ProteinBuilder::BuildType::CURVEDWIREFRAME, generatedVertecis, generatedIndices);
 
         m_vertexCount = generatedVertecis.size();
         m_indexCount = generatedIndices.size();
@@ -92,6 +121,11 @@ bool ProteinModel::InitializeBuffers(ID3D11Device* device)
             indices[i] = generatedIndices[i];
         }
     }
+
+
+
+
+
 
     //{   // curved tube generator
     //    std::vector<std::pair<Vec3, Vec3>> vVertices;

@@ -32,7 +32,7 @@ void Input::Initialize()
     m_lButtonDown = false;
     m_rButtonDown = false;
     m_wheelRotation = 1.0f;
-
+    
     return;
 }
 

@@ -6,7 +6,7 @@ TubeBuilder::TubeBuilder()
 {
 }
 
-TubeBuilder::TubeBuilder(unsigned int noSides, float thicknes):
+TubeBuilder::TubeBuilder(uint noSides, float thicknes):
     sides{ noSides },
     thicknes{ thicknes }
 {
@@ -18,71 +18,79 @@ TubeBuilder::~TubeBuilder()
 }
 
 
-void TubeBuilder::buildCurvedWireframe(Curve& curve, const unsigned int noPoints, std::vector<Vertex>& vertices, std::vector<unsigned int>& indices) const
+void TubeBuilder::buildCurvedWireframe(const std::vector<Vec3>& atoms, std::vector<Vertex>& vertices, std::vector<uint>& indices) const
 {
-    // todo: reserve memory for vertices and indices
-    const float sampleLength = 50.0f;// todo: put as func param
-
-    Vec3 prevPoint;
-    Vec3 p0 = curve(0.0f);
-    Vec3 p1 = curve(1.0f / (float)noPoints * sampleLength);
-    Vec3 nextPoint = curve(2.0f / (float)noPoints * sampleLength);
-
-    for (int i = 3; i < noPoints - 1; ++i)
+    Vec3 p0, p1, p2, p3;
+    uint segments = atoms.size() - 1;
+    for (uint i = 0; i < segments; ++i)
     {
-        prevPoint = p0;
-        p0 = p1;
-        p1 = nextPoint;
-        nextPoint = curve((float)i / (float)noPoints * sampleLength);
-
-        std::vector<Vertex> tubePiece = tubeSample(p0 - prevPoint, p0, p1, nextPoint - p1);
-        unsigned int baseIdx = vertices.size();
-
-        for (int j = 0, tubePieceSize = tubePiece.size(); j < tubePieceSize; ++j)
-        {   // todo: use memcpy or push directly in vertices vector?
-            vertices.push_back(tubePiece[j]);
-        }
-
-        // update indices (2 triangles per side)
-        unsigned int mod = 2 * sides; // needed because first tube sample vertices are also used for last triangle
-        for (int k = 0; k < sides; ++k)
+        p0 = (i == 0) ? atoms[1].opposite(atoms[0]) : atoms[i - 1];
+        p1 = atoms[i];
+        p2 = atoms[i + 1];
+        p3 = (i == segments - 1) ? atoms[atoms.size() - 2].opposite(atoms[atoms.size() - 1]) : atoms[i + 2];
+        
+        for (int j = 0; j < partsPerCurveSegment; ++j)
         {
-            unsigned int vIndex = k * 2;
+            float lowerT = (float)j / float(partsPerCurveSegment);
+            float upperT = (float)(j + 1) / float(partsPerCurveSegment);
+            Vec3 lowerPoint = Curve::catmullRom(lowerT, tension, p0, p1, p2, p3);
+            Vec3 upperPoint = Curve::catmullRom(upperT, tension, p0, p1, p2, p3);
+            Vec3 inVec = Curve::catumullRomTangent(lowerT, tension, p0, p1, p2, p3);
+            Vec3 outVec = Curve::catumullRomTangent(upperT, tension, p0, p1, p2, p3);
 
-            // "lower" triangle
-            indices.push_back(vIndex + baseIdx);
-            indices.push_back(vIndex + 1 + baseIdx);
-            indices.push_back((vIndex + 2) % mod + baseIdx);
+            std::vector<Vertex> tubePieces = tubeSample(inVec, lowerPoint, upperPoint, outVec);
 
-            // "upper" triangle
-            indices.push_back(vIndex + 1 + baseIdx);
-            indices.push_back((vIndex + 3) % mod + baseIdx);
-            indices.push_back((vIndex + 2) % mod + baseIdx);
+            {   // todo: extract this (from previous func too)
+                // save base index
+                uint baseIdx = vertices.size();
+
+                for (int j = 0, tubePieceSize = tubePieces.size(); j < tubePieceSize; ++j)
+                {   // todo: use memcpy or push directly in vertices vector?
+                    vertices.push_back(tubePieces[j]);
+                }
+
+                // update indices (2 triangles per side)
+                uint mod = 2 * sides; // needed because first tube sample vertices are also used for last triangle
+                for (int k = 0; k < sides; ++k)
+                {
+                    uint vIndex = k * 2;
+
+                    // "lower" triangle
+                    indices.push_back(vIndex + baseIdx);
+                    indices.push_back(vIndex + 1 + baseIdx);
+                    indices.push_back((vIndex + 2) % mod + baseIdx);
+
+                    // "upper" triangle
+                    indices.push_back(vIndex + 1 + baseIdx);
+                    indices.push_back((vIndex + 3) % mod + baseIdx);
+                    indices.push_back((vIndex + 2) % mod + baseIdx);
+                }
+            }
         }
     }
 }
 
-void TubeBuilder::buildWireframe(const Chain& atoms, std::vector<Vertex>& vertices, std::vector<unsigned int>& indices) const
+void TubeBuilder::buildWireframe(const std::vector<Vec3>& atoms, std::vector<Vertex>& vertices, std::vector<uint>& indices) const
 {
     vertices.reserve(sides * (atoms.size() + 1)); // every tube piece in wireframe needs its own vertices; 
     indices.reserve(sides * (atoms.size() + 1));
 
     for (int i = 0, n = atoms.size() - 1; i < n; ++i)
     {
-        Vec3 p0{ atoms[i].xCoord    , atoms[i].yCoord    , atoms[i].zCoord };
-        Vec3 p1{ atoms[i + 1].xCoord, atoms[i + 1].yCoord, atoms[i + 1].zCoord };
+        Vec3 p0 = atoms[i];
+        Vec3 p1 = atoms[i + 1];
 
         Vec3 inVec, outVec;
         inVec = outVec = p1 - p0;
 
         if (i > 0)
         {   // update inVec to match previous one
-            Vec3 pPrev{ atoms[i - 1].xCoord, atoms[i - 1].yCoord, atoms[i - 1].zCoord };
+            Vec3 pPrev = atoms[i - 1];
             inVec = p0 - pPrev;
         }
         if (i < n - 1)
         {   // update outVec to match next one
-            Vec3 pNext{ atoms[i + 2].xCoord, atoms[i + 2].yCoord, atoms[i + 2].zCoord };
+            Vec3 pNext = atoms[i + 2];
             outVec = pNext - p1;
         }
 
@@ -90,7 +98,7 @@ void TubeBuilder::buildWireframe(const Chain& atoms, std::vector<Vertex>& vertic
         std::vector<Vertex> tubePiece = tubeSample(inVec, p0, p1, outVec);
 
         {   // todo: extract this (from previous func too)
-            unsigned int baseIdx = vertices.size();
+            uint baseIdx = vertices.size();
 
             for (int j = 0, tubePieceSize = tubePiece.size(); j < tubePieceSize; ++j)
             {   // todo: use memcpy or push directly in vertices vector?
@@ -98,10 +106,10 @@ void TubeBuilder::buildWireframe(const Chain& atoms, std::vector<Vertex>& vertic
             }
 
             // update indices (2 triangles per side)
-            unsigned int mod = 2 * sides; // needed because first tube sample vertices are also used for last triangle
+            uint mod = 2 * sides; // needed because first tube sample vertices are also used for last triangle
             for (int k = 0; k < sides; ++k)
             {
-                unsigned int vIndex = k * 2;
+                uint vIndex = k * 2;
 
                 // "lower" triangle
                 indices.push_back(vIndex + baseIdx);
