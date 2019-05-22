@@ -15,7 +15,7 @@ public:
     TubeBuilder(unsigned int noSides, float thicknes);
     ~TubeBuilder();
 
-    unsigned int sides = 20;
+    unsigned int sides = 10;
     unsigned int partsPerCurveSegment = 10;
     float thicknes = 0.2f;
     float tension = 1.0f; // 0.0f -> straight line ; 1.0f -> very curvy lines
@@ -26,6 +26,7 @@ public:
 
 private:
     std::vector<Vertex> tubeSample(const Vec3 tPrev, const Vec3 t0, const Vec3 t1, const Vec3 tNext) const;
+    void generateAndInsert(const Vec3 inVec, const Vec3 lowerPoint, const Vec3 upperPoint, const Vec3 outVec, std::vector<Vertex>& vertices, std::vector<uint>& indices) const;
     
 };
 

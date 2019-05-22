@@ -59,6 +59,11 @@ DirectX::XMFLOAT3 Camera::GetRotation()
     return DirectX::XMFLOAT3(m_rotationX, m_rotationY, m_rotationZ);
 }
 
+DirectX::XMFLOAT3 Camera::GetLookDirection()
+{
+    return { m_focusPoint.x - m_positionX, m_focusPoint.y - m_positionY, m_focusPoint.z - m_positionZ };
+}
+
 void Camera::Rotate(DirectX::XMINT2 mouseDelta)
 {   // it doesn't matter if vectors are normalize or not
     if (mouseDelta.x == 0 && mouseDelta.y == 0) return;

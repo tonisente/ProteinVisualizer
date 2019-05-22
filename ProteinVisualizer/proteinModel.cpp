@@ -67,7 +67,7 @@ bool ProteinModel::InitializeBuffers(ID3D11Device* device)
     //{   // build wireframe
     //    PDBParser& parser = PDBParser::getInstance();
     //    //ProteinData proteinData = parser.parse("test.pdb");
-    //    ProteinData proteinData = parser.parse("6gms.pdb");
+    //    ProteinData proteinData = parser.parse("2hiu.pdb");
     //    std::vector<Vertex> generatedVertecis;
     //    std::vector<unsigned int> generatedIndices;
 
@@ -96,7 +96,7 @@ bool ProteinModel::InitializeBuffers(ID3D11Device* device)
     {   // build curved wireframe
         PDBParser& parser = PDBParser::getInstance();
         //ProteinData proteinData = parser.parse("test.pdb");
-        ProteinData proteinData = parser.parse("6gms.pdb");
+        ProteinData proteinData = parser.parse("2hiu.pdb");
         std::vector<Vertex> generatedVertecis;
         std::vector<unsigned int> generatedIndices;
 

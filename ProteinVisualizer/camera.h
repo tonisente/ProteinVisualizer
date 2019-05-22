@@ -31,6 +31,7 @@ public:
 
     DirectX::XMFLOAT3 GetPosition();
     DirectX::XMFLOAT3 GetRotation();
+    DirectX::XMFLOAT3 GetLookDirection();
 
     void Rotate(DirectX::XMINT2 mouseDelta);
     void Zoom(float zoom);

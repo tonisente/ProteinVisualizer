@@ -41,12 +41,17 @@ void ProteinBuilder::constructCompleteWireframe(const ProteinData& proteinData, 
 void ProteinBuilder::constructCompleteCurvedWireframe(const ProteinData& proteinData, std::vector<Vertex>& vertices, std::vector<uint>& indices)
 {
     const Model& model = proteinData.models[0];
-    std::vector<Vec3> atoms = filterChain(model[0]);
+    for (int i = 0; i < model.size(); ++i)
+    {
+        std::vector<Vec3> atoms = filterChain(model[i]);
 
-    std::vector<Vertex> wireframeVertices;
-    std::vector<uint> wireframeIndices;
+        std::vector<Vertex> wireframeVertices;
+        std::vector<uint> wireframeIndices;
 
-    m_tubeBuilder.buildCurvedWireframe(atoms, vertices, indices);
+        m_tubeBuilder.buildCurvedWireframe(atoms, vertices, indices);
+
+        bufferCombinder(vertices, wireframeVertices, indices, wireframeIndices);
+    }
 }
 
 

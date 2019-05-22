@@ -180,6 +180,10 @@ bool Graphics::Render(DirectX::XMINT2 rotationDelta, DirectX::XMINT2 translation
     m_D3D->GetWorldMatrix(worldMatrix);
     m_D3D->GetProjectionMatrix(projectionMatrix);
 
+    //// Update light to point in the same direction as camera
+    //auto dir = m_Camera->GetLookDirection();
+    //m_Light->SetDirection(dir.x, dir.y, dir.z);
+
     // Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
     m_proteinModel->prepareForRender(m_D3D->GetDeviceContext());
 

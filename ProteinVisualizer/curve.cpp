@@ -54,7 +54,7 @@ Vec3 Curve::catumullRomTangent(const float t, const float tension, const Vec3 p0
     float y = catmullRomTangentMatrix(t, tension, p0.y, p1.y, p2.y, p3.y);
     float z = catmullRomTangentMatrix(t, tension, p0.z, p1.z, p2.z, p3.z);
 
-    return { x, y, z };
+    return Vec3(x, y, z).normalized();
 }
 
 

@@ -38,34 +38,7 @@ void TubeBuilder::buildCurvedWireframe(const std::vector<Vec3>& atoms, std::vect
             Vec3 inVec = Curve::catumullRomTangent(lowerT, tension, p0, p1, p2, p3);
             Vec3 outVec = Curve::catumullRomTangent(upperT, tension, p0, p1, p2, p3);
 
-            std::vector<Vertex> tubePieces = tubeSample(inVec, lowerPoint, upperPoint, outVec);
-
-            {   // todo: extract this (from previous func too)
-                // save base index
-                uint baseIdx = vertices.size();
-
-                for (int j = 0, tubePieceSize = tubePieces.size(); j < tubePieceSize; ++j)
-                {   // todo: use memcpy or push directly in vertices vector?
-                    vertices.push_back(tubePieces[j]);
-                }
-
-                // update indices (2 triangles per side)
-                uint mod = 2 * sides; // needed because first tube sample vertices are also used for last triangle
-                for (int k = 0; k < sides; ++k)
-                {
-                    uint vIndex = k * 2;
-
-                    // "lower" triangle
-                    indices.push_back(vIndex + baseIdx);
-                    indices.push_back(vIndex + 1 + baseIdx);
-                    indices.push_back((vIndex + 2) % mod + baseIdx);
-
-                    // "upper" triangle
-                    indices.push_back(vIndex + 1 + baseIdx);
-                    indices.push_back((vIndex + 3) % mod + baseIdx);
-                    indices.push_back((vIndex + 2) % mod + baseIdx);
-                }
-            }
+            generateAndInsert(inVec, lowerPoint, upperPoint, outVec, vertices, indices);
         }
     }
 }
@@ -77,55 +50,26 @@ void TubeBuilder::buildWireframe(const std::vector<Vec3>& atoms, std::vector<Ver
 
     for (int i = 0, n = atoms.size() - 1; i < n; ++i)
     {
-        Vec3 p0 = atoms[i];
-        Vec3 p1 = atoms[i + 1];
+        Vec3 lowerPoint = atoms[i];
+        Vec3 upperPoint = atoms[i + 1];
 
         Vec3 inVec, outVec;
-        inVec = outVec = p1 - p0;
+        inVec = outVec = upperPoint - lowerPoint;
 
         if (i > 0)
         {   // update inVec to match previous one
             Vec3 pPrev = atoms[i - 1];
-            inVec = p0 - pPrev;
+            inVec = lowerPoint - pPrev;
         }
         if (i < n - 1)
         {   // update outVec to match next one
             Vec3 pNext = atoms[i + 2];
-            outVec = pNext - p1;
+            outVec = pNext - upperPoint;
         }
 
-        // generate vertices
-        std::vector<Vertex> tubePiece = tubeSample(inVec, p0, p1, outVec);
-
-        {   // todo: extract this (from previous func too)
-            uint baseIdx = vertices.size();
-
-            for (int j = 0, tubePieceSize = tubePiece.size(); j < tubePieceSize; ++j)
-            {   // todo: use memcpy or push directly in vertices vector?
-                vertices.push_back(tubePiece[j]);
-            }
-
-            // update indices (2 triangles per side)
-            uint mod = 2 * sides; // needed because first tube sample vertices are also used for last triangle
-            for (int k = 0; k < sides; ++k)
-            {
-                uint vIndex = k * 2;
-
-                // "lower" triangle
-                indices.push_back(vIndex + baseIdx);
-                indices.push_back(vIndex + 1 + baseIdx);
-                indices.push_back((vIndex + 2) % mod + baseIdx);
-
-                // "upper" triangle
-                indices.push_back(vIndex + 1 + baseIdx);
-                indices.push_back((vIndex + 3) % mod + baseIdx);
-                indices.push_back((vIndex + 2) % mod + baseIdx);
-            }
-        }
+        generateAndInsert(inVec, lowerPoint, upperPoint, outVec, vertices, indices);
     }
 }
-
-
 
 
 std::vector<Vertex> TubeBuilder::tubeSample(const Vec3 inVec, const Vec3 p0, const Vec3 p1, const Vec3 outVec) const
@@ -163,4 +107,33 @@ std::vector<Vertex> TubeBuilder::tubeSample(const Vec3 inVec, const Vec3 p0, con
 }
 
 
+void TubeBuilder::generateAndInsert(const Vec3 inVec, const Vec3 lowerPoint, const Vec3 upperPoint, const Vec3 outVec, std::vector<Vertex>& vertices, std::vector<uint>& indices) const
+{
+    std::vector<Vertex> tubePieces = tubeSample(inVec, lowerPoint, upperPoint, outVec);
 
+    {   // save base index
+        uint baseIdx = vertices.size();
+
+        for (int j = 0, tubePieceSize = tubePieces.size(); j < tubePieceSize; ++j)
+        {   // todo: use memcpy or push directly in vertices vector?
+            vertices.push_back(tubePieces[j]);
+        }
+
+        // update indices (2 triangles per side)
+        uint mod = 2 * sides; // needed because first tube sample vertices are also used for last triangle
+        for (int k = 0; k < sides; ++k)
+        {
+            uint vIndex = k * 2;
+
+            // "lower" triangle
+            indices.push_back(vIndex + baseIdx);
+            indices.push_back(vIndex + 1 + baseIdx);
+            indices.push_back((vIndex + 2) % mod + baseIdx);
+
+            // "upper" triangle
+            indices.push_back(vIndex + 1 + baseIdx);
+            indices.push_back((vIndex + 3) % mod + baseIdx);
+            indices.push_back((vIndex + 2) % mod + baseIdx);
+        }
+    }
+}
