@@ -28,14 +28,14 @@ struct Helix
     char ID[4];
     char initialResidueName[4];
     char chainID;
-    int redisueSeqNumber;
-    char codeForInsertion;
-    char terminalResidueName;
-    char chainID2;
     int residueSeqNumber;
+    char codeForInsertion;
+    char terminalResidueName[4];
+    char chainID2;
+    int residueSeqNumber2;
     char codeForInsertion2;
     int type;
-    char comment[31];
+    char comment[50];
     int length;
 };
 

@@ -54,8 +54,8 @@ ProteinData PDBParser::parse(const std::string& filename)
         }
         else if (!line.rfind("HELIX", 0))
         {
-            //Helix helix = parseHelix(line);
-            //helices.push_back(helix);            
+            Helix helix = parseHelix(line);
+            helices.push_back(helix);            
         }
     }
     
@@ -64,9 +64,6 @@ ProteinData PDBParser::parse(const std::string& filename)
  
 Atom PDBParser::parseAtom(const std::string& line)
 {
-    //char * copyLine = new char[line.size() + 2]; // todo: get rid of this copy (or new at least)
-    //strcpy(copyLine, line.c_str());
-
     Atom atom;
 
     sscanf
@@ -103,10 +100,11 @@ Atom PDBParser::parseAtom(const std::string& line)
         atom.elementSymbol
     );
 
-    //delete [] copyLine;
+    // reverse point (still dunno why :/)
     atom.xCoord = -atom.xCoord;
     atom.yCoord = -atom.yCoord;
     atom.zCoord = -atom.zCoord;
+
     return atom;
 }
 
@@ -114,40 +112,37 @@ Atom PDBParser::parseAtom(const std::string& line)
 Helix PDBParser::parseHelix(const std::string& line)
 {
     Helix helix;
-    //sscanf
-    //(
-    //    line.c_str(),
-    //    "ATOM "\
-    //    "%6d"\
-    //    "%4s"\
-    //    "%c"\
-    //    "%3s "\
-    //    "%c"\
-    //    "%3d"\
-    //    "%c"\
-    //    "%f"\
-    //    "%f"\
-    //    "%f"\
-    //    "%f"\
-    //    "%f"\
-    //    "      %4s"\
-    //    "%2s",
-    //    &atom.serialNumber,
-    //    atom.name,
-    //    &atom.alternateLocationIndicator,
-    //    atom.residueName,
-    //    &atom.chainID,
-    //    &atom.residueSeqNumber,
-    //    &atom.codeForInsertion,
-    //    &atom.xCoord,
-    //    &atom.yCoord,
-    //    &atom.zCoord,
-    //    &atom.occupancy,
-    //    &atom.temperatureFactor,
-    //    atom.segmentID,
-    //    atom.elementSymbol
-    //);
+    sscanf
+    (
+        line.c_str(),
+        "HELIX "\
+        "%3d "\
+        "%3s "\
+        "%3s "\
+        "%c "\
+        "%4d"\
+        "%c "\
+        "%3s "\
+        "%c"\
+        "%4d"\
+        "%c"\
+        "%2d"\
+        "%30[0-9a-zA-Z ]"\
+        "%d",
+        &helix.serialNumber,
+        &helix.ID,
+        &helix.initialResidueName,
+        &helix.chainID,
+        &helix.residueSeqNumber,
+        &helix.codeForInsertion,
+        &helix.terminalResidueName,
+        &helix.chainID2,
+        &helix.residueSeqNumber2,
+        &helix.codeForInsertion2,
+        &helix.type,
+        &helix.comment,
+        &helix.length
+    );
 
-    helix.codeForInsertion = 'a';
     return helix;
 }
