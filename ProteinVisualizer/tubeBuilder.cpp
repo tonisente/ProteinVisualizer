@@ -20,120 +20,130 @@ TubeBuilder::~TubeBuilder()
 
 void TubeBuilder::buildCurvedWireframe(const std::vector<Vec3>& atoms, std::vector<Vertex>& vertices, std::vector<uint>& indices) const
 {
-    Vec3 p0, p1, p2, p3;
-    uint segments = atoms.size() - 1;
-    for (uint i = 0; i < segments; ++i)
-    {
-        p0 = (i == 0) ? atoms[1].opposite(atoms[0]) : atoms[i - 1];
-        p1 = atoms[i];
-        p2 = atoms[i + 1];
-        p3 = (i == segments - 1) ? atoms[atoms.size() - 2].opposite(atoms[atoms.size() - 1]) : atoms[i + 2];
-        
-        for (int j = 0; j < partsPerCurveSegment; ++j)
+    std::vector<Vec3> points;
+    uint n = atoms.size();
+    points.reserve(n * partsPerCurveSegment);
+
+    {   // generate all points for curve
+        Vec3 p0, p1, p2, p3;
+        for (uint i = 0; i < n - 1; ++i)
         {
-            float lowerT = (float)j / float(partsPerCurveSegment);
-            float upperT = (float)(j + 1) / float(partsPerCurveSegment);
-            Vec3 lowerPoint = Curve::catmullRom(lowerT, tension, p0, p1, p2, p3);
-            Vec3 upperPoint = Curve::catmullRom(upperT, tension, p0, p1, p2, p3);
-            Vec3 inVec = Curve::catumullRomTangent(lowerT, tension, p0, p1, p2, p3);
-            Vec3 outVec = Curve::catumullRomTangent(upperT, tension, p0, p1, p2, p3);
+            p0 = (i == 0) ? atoms[1].opposite(atoms[0]) : atoms[i - 1];
+            p1 = atoms[i];
+            p2 = atoms[i + 1];
+            p3 = (i == n - 2) ? atoms[n - 2].opposite(atoms[n - 1]) : atoms[i + 2];
 
-            generateAndInsert(inVec, lowerPoint, upperPoint, outVec, vertices, indices);
+            for (int j = 0; j < partsPerCurveSegment; ++j)
+            {
+                float t = (float)j / float(partsPerCurveSegment);
+                Vec3 point = Curve::catmullRom(t, tension, p0, p1, p2, p3);
+
+                points.push_back(point);
+            }
         }
+
+        // add last point
+        points.push_back(atoms[n - 1]);
     }
+
+    buildWireframe(points, vertices, indices);
 }
 
-void TubeBuilder::buildWireframe(const std::vector<Vec3>& atoms, std::vector<Vertex>& vertices, std::vector<uint>& indices) const
+void TubeBuilder::buildWireframe(const std::vector<Vec3>& points, std::vector<Vertex>& vertices, std::vector<uint>& indices) const
 {
-    vertices.reserve(sides * (atoms.size() + 1)); // every tube piece in wireframe needs its own vertices; 
-    indices.reserve(sides * (atoms.size() + 1));
+    uint n = points.size();
+    vertices.clear();
+    indices.clear();
+    vertices.reserve(sides * n);
+    indices.reserve(sides * n);
 
-    for (int i = 0, n = atoms.size() - 1; i < n; ++i)
+    assert(n >= 2);
+
+    Vec3 lowerPoint = points[0];
+    Vec3 upperPoint = points[1];
+
+    // generate base points
+    std::vector<Vertex> prevPoints = baseTubePoints(lowerPoint, upperPoint);
+    // put them into vertex buffer (still nothing to insert into index buffer)
+    vertices.insert(vertices.end(), prevPoints.begin(), prevPoints.end());
+
+    // create all other points and generate triangles (indices);
+    for (int i = 0; i < n - 1; ++i)
     {
-        Vec3 lowerPoint = atoms[i];
-        Vec3 upperPoint = atoms[i + 1];
+        {   // generate vertices
+            lowerPoint = points[i];
+            upperPoint = points[i + 1];
 
-        Vec3 inVec, outVec;
-        inVec = outVec = upperPoint - lowerPoint;
+            Vec3 outVec = upperPoint - lowerPoint; // valid only for last tube piece.
+            if (i < n - 2)
+            {
+                outVec = points[i + 2] - upperPoint;
+            }
 
-        if (i > 0)
-        {   // update inVec to match previous one
-            Vec3 pPrev = atoms[i - 1];
-            inVec = lowerPoint - pPrev;
-        }
-        if (i < n - 1)
-        {   // update outVec to match next one
-            Vec3 pNext = atoms[i + 2];
-            outVec = pNext - upperPoint;
+            std::vector<Vertex> nextPoints = nextTubePoints(prevPoints, lowerPoint, upperPoint, outVec);
+            vertices.insert(vertices.end(), nextPoints.begin(), nextPoints.end());
+            prevPoints = std::move(nextPoints);
         }
 
-        generateAndInsert(inVec, lowerPoint, upperPoint, outVec, vertices, indices);
+        {   //update indices (2 triangles per side)
+            uint lowerBaseIndex = vertices.size() - 2 * sides;
+            uint upperBaseIndex = vertices.size() - sides;
+            for (int side = 0; side < sides; ++side)
+            {
+                // lower triangle
+                indices.push_back(lowerBaseIndex + side);
+                indices.push_back(lowerBaseIndex + (side + 1) % sides);
+                indices.push_back(upperBaseIndex + side);
+
+                // upper triangle
+                indices.push_back(lowerBaseIndex + (side + 1) % sides);
+                indices.push_back(upperBaseIndex + (side + 1) % sides);
+                indices.push_back(upperBaseIndex + side);
+            }
+        }
     }
 }
 
 
-std::vector<Vertex> TubeBuilder::tubeSample(const Vec3 inVec, const Vec3 p0, const Vec3 p1, const Vec3 outVec) const
+std::vector<Vertex> TubeBuilder::nextTubePoints(const std::vector<Vertex>& previousPoints, const Vec3& p0, const Vec3& p1, const Vec3& outVec) const
 {
     Vec3 centralVec = p1 - p0;
     Vec3 radiusVec = perpendicularVector(centralVec);
 
-    Plane plane1{ (inVec + centralVec) / 2, p0 };
-    Plane plane2{ (centralVec + outVec) / 2, p1 };
+    Plane upperPlane{ (centralVec + outVec) / 2, p1 };
 
     std::vector<Vertex> vertices;
-    vertices.reserve(sides * 2);
-
-    for (int j = 0; j < sides; ++j)
+    vertices.reserve(sides);
+    
+    // WTF?!
+    for (const Vertex& basePoint : previousPoints)
     {
-        float rotationDegree = ((float)j / (float)sides) * (2.0f * PI);
-        auto rotatedVec = Vec3::rotate(radiusVec, centralVec, rotationDegree);
-        Vec3 sideBasePoint = rotatedVec * thicknes + p0;
-        Line sideLine{ centralVec, sideBasePoint };
-
-        // vertex on previous plane
-        Vec3 lowerPoint = linePlaneIntersection(sideLine, plane1);
-        Vec3 lowerPointNormal = lowerPoint - p0;
-        Vertex v{ lowerPoint, lowerPointNormal, color };
-        vertices.push_back(v);
-
-        // vertex on next plane
-        Vec3 upperPoint = linePlaneIntersection(sideLine, plane2);
-        Vec3 upperPointNormal = upperPoint - p1;
-        v = { upperPoint, upperPointNormal, color };
-        vertices.push_back(v);
+        Line sideLine{ centralVec, basePoint.position };
+        Vec3 intersectionPoint = linePlaneIntersection(sideLine, upperPlane);
+        Vertex v{ intersectionPoint, intersectionPoint - p1, color };
+        vertices.emplace_back(v);
     }
-
+        
     return vertices;
 }
 
 
-void TubeBuilder::generateAndInsert(const Vec3 inVec, const Vec3 lowerPoint, const Vec3 upperPoint, const Vec3 outVec, std::vector<Vertex>& vertices, std::vector<uint>& indices) const
+std::vector<Vertex> TubeBuilder::baseTubePoints(const Vec3& p0, const Vec3& p1) const
 {
-    std::vector<Vertex> tubePieces = tubeSample(inVec, lowerPoint, upperPoint, outVec);
+    Vec3 centralVec = p1 - p0;
+    Vec3 radiusVec = perpendicularVector(centralVec);
 
-    {   // save base index
-        uint baseIdx = vertices.size();
+    std::vector<Vertex> vertices;
+    vertices.reserve(sides);
 
-        for (int j = 0, tubePieceSize = tubePieces.size(); j < tubePieceSize; ++j)
-        {   // todo: use memcpy or push directly in vertices vector?
-            vertices.push_back(tubePieces[j]);
-        }
-
-        // update indices (2 triangles per side)
-        uint mod = 2 * sides; // needed because first tube sample vertices are also used for last triangle
-        for (int k = 0; k < sides; ++k)
-        {
-            uint vIndex = k * 2;
-
-            // "lower" triangle
-            indices.push_back(vIndex + baseIdx);
-            indices.push_back(vIndex + 1 + baseIdx);
-            indices.push_back((vIndex + 2) % mod + baseIdx);
-
-            // "upper" triangle
-            indices.push_back(vIndex + 1 + baseIdx);
-            indices.push_back((vIndex + 3) % mod + baseIdx);
-            indices.push_back((vIndex + 2) % mod + baseIdx);
-        }
+    for (int j = 0; j < sides; ++j)
+    {
+        float rotationDegree = ((float)j / (float)sides) * (2.0f * PI);
+        Vec3 rotatedVec = Vec3::rotate(radiusVec, centralVec, rotationDegree);
+        Vec3 point{ rotatedVec * thicknes + p0 };
+        Vertex v{ point, (point - p0).normalized(), color };
+        vertices.emplace_back(v);
     }
+
+    return vertices;
 }

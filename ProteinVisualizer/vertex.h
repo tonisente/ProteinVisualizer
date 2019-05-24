@@ -14,5 +14,11 @@ struct Vertex
     {
     }
 
+    Vertex(const Vertex& v):
+        position{ v.position },
+        normal{ v.normal },
+        color{ v.color }
+    {
+    }
 };
 

@@ -15,18 +15,17 @@ public:
     TubeBuilder(unsigned int noSides, float thicknes);
     ~TubeBuilder();
 
-    unsigned int sides = 10;
-    unsigned int partsPerCurveSegment = 10;
+    unsigned int sides = 20;
+    unsigned int partsPerCurveSegment = 20;
     float thicknes = 0.2f;
-    float tension = 1.0f; // 0.0f -> straight line ; 1.0f -> very curvy lines
+    float tension = 1.0f; // 0.0f == tight curve ; 1.0f == lose curve
     Vec3 color{ 1.0f, 1.0f, 0.5f };
 
     void buildCurvedWireframe(const std::vector<Vec3>& atoms, std::vector<Vertex>& vertices, std::vector<uint>& indices) const;
     void buildWireframe(const std::vector<Vec3>& atoms, std::vector<Vertex>& vertices, std::vector<uint>& indices) const;
 
 private:
-    std::vector<Vertex> tubeSample(const Vec3 tPrev, const Vec3 t0, const Vec3 t1, const Vec3 tNext) const;
-    void generateAndInsert(const Vec3 inVec, const Vec3 lowerPoint, const Vec3 upperPoint, const Vec3 outVec, std::vector<Vertex>& vertices, std::vector<uint>& indices) const;
-    
+    std::vector<Vertex> nextTubePoints(const std::vector<Vertex>& previousPoints, const Vec3& p0, const Vec3& p1, const Vec3& outVec = { 0.0f, 0.0f, 0.0f }) const;
+    std::vector<Vertex> baseTubePoints(const Vec3& p0, const Vec3& p1) const;
 };
 

@@ -11,6 +11,8 @@ typedef unsigned int uint;
 class ProteinBuilder
 {
 public:
+    ProteinBuilder(const ProteinData& proteinData, std::vector<Vertex>& m_vertices, std::vector<uint>& indices);
+
     enum class BuildType
     {
         WIREFRAME,
@@ -18,17 +20,24 @@ public:
         TERTIARY
     };
 
-    void buildProtein(const ProteinData& proteinData, BuildType type, std::vector<Vertex>& vertices, std::vector<uint>& indices);
+    void buildProtein(BuildType buildType);
 
 private:
-    void constructCompleteWireframe(const ProteinData& proteinData, BuildType type, std::vector<Vertex>& vertices, std::vector<uint>& indices);
-    void constructAlphaHelix(const ProteinData& proteinData, std::vector<Vertex>& vertices, std::vector<uint>& indices);
+    void constructCompleteWireframe();
+    void constructAlphaHelix();
+    void constructTertiary();
 
-    void bufferCombinder(std::vector<Vertex>& destVertex, const std::vector<Vertex>& srcVertex, std::vector<uint>& destIndex, const std::vector<uint>& srcIndex);
+    /** Puts all vertices and indices from source vertex/index buffer into original vertex/index buffer. */
+    void bufferCombinder(const std::vector<Vertex>& srcVertex, const std::vector<uint>& srcIndex);
 
     std::vector<Vec3> filterChain(const Chain& chain) const;
 
     TubeBuilder m_tubeBuilder;
     unsigned int m_maxIndex = 0;
+
+    const ProteinData& m_proteinData;
+    std::vector<Vertex>& m_vertices;
+    std::vector<uint>& m_indices;
+    BuildType m_buildType;
 };
 
