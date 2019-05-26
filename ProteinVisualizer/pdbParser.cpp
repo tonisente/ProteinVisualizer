@@ -37,11 +37,10 @@ ProteinData PDBParser::parse(const std::string& filename)
         if (!line.rfind("ATOM", 0))
         {
             Atom atom = parseAtom(line);
-            chain.push_back(atom);
-            //if (/*atom.alternateLocationIndicator == ' ' || atom.alternateLocationIndicator == 'A'*/ atom.serialNumber == 238)
-            //{
-            //    chain.push_back(atom);
-            //}
+            if (atom.altLocationIndicator == ' ' || atom.altLocationIndicator == 'A')
+            {
+                chain.push_back(atom);
+            }
         }
         else if (!line.rfind("TER", 0))
         {
@@ -59,8 +58,8 @@ ProteinData PDBParser::parse(const std::string& filename)
         }
         else if (!line.rfind("HELIX", 0))
         {
-            //Helix helix = parseHelix(line);
-            //helices.push_back(helix);            
+            Helix helix = parseHelix(line);
+            helices.push_back(helix);            
         }
     }
     
@@ -132,6 +131,63 @@ Atom PDBParser::parseAtom(const std::string& line)
     atom.zCoord = -atom.zCoord;
 
     return atom;
+}
+
+
+Helix PDBParser::parseHelix(const std::string& line)
+{
+    Helix helix;
+    char buffer[35];
+
+    // helix serial number
+    trimSpace(line, 7, 9, buffer);
+    helix.serialNumber = atoi(buffer);
+
+    // helix ID
+    trimSpace(line, 11, 13, buffer);
+    strcpy(helix.ID, buffer);
+
+    // initial residue name
+    trimSpace(line, 15, 17, buffer);
+    strcpy(helix.initialResidueName, buffer);
+
+    // chain identifier
+    helix.chainID = line[19];
+
+    // residue sequence number
+    trimSpace(line, 21, 24, buffer);
+    helix.residueSeqNumber = atoi(buffer);
+
+    // code for insertion of residues
+    helix.codeForInsertion = line[25];
+
+    // terminal residue name
+    trimSpace(line, 27, 29, buffer);
+    strcpy(helix.terminalResidueName, buffer);
+
+    // chain identifier
+    helix.chainID2 = line[31];
+
+    // residue sequence number
+    trimSpace(line, 33, 36, buffer);
+    helix.residueSeqNumber2 = atoi(buffer);
+
+    // code for insertions of residues
+    helix.codeForInsertion2 = line[37];
+
+    // type of helix
+    trimSpace(line, 38, 39, buffer);
+    helix.type = atoi(buffer);
+
+    // comment
+    trimSpace(line, 40, 69, buffer);
+    strcpy(helix.comment, buffer);
+
+    // length of helix
+    trimSpace(line, 71, 75, buffer);
+    helix.length = atoi(buffer);
+
+    return helix;
 }
 
 

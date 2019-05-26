@@ -66,7 +66,7 @@ bool ProteinModel::InitializeBuffers(ID3D11Device* device)
 
     {   // build model
         PDBParser& parser = PDBParser::getInstance();
-        ProteinData proteinData = parser.parse("2hiu.pdb");
+        ProteinData proteinData = parser.parse("6niv.pdb");
 
         std::vector<Vertex> generatedVertecis;
         std::vector<unsigned int> generatedIndices;

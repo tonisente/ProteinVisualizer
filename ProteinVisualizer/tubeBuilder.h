@@ -15,8 +15,8 @@ public:
     TubeBuilder(unsigned int noSides, float thicknes);
     ~TubeBuilder();
 
-    unsigned int sides = 5;
-    unsigned int partsPerCurveSegment = 5;
+    unsigned int sides = 8;
+    unsigned int partsPerCurveSegment = 8;
     float thicknes = 0.2f;
     float tension = 0.9f; // 0.0f == tight curve ; 1.0f == lose curve
     Vec3 color{ 1.0f, 1.0f, 0.5f };
