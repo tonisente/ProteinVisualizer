@@ -8,7 +8,7 @@ class Curve
 {
 public:
     static Vec3 catmullRom(const float t, const float tension, const Vec3 p0, const Vec3 p1, const Vec3 p2, const Vec3 p3);
-    static Vec3 catumullRomTangent(const float t, const float tension, const Vec3 p0, const Vec3 p1, const Vec3 p2, const Vec3 p3);
+    static Vec3 catmullRomTangent(const float t, const float tension, const Vec3 p0, const Vec3 p1, const Vec3 p2, const Vec3 p3);
 
     Curve(const std::vector<Vec3> v, const float tension);
     ~Curve();

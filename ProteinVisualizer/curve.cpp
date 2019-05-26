@@ -45,7 +45,7 @@ Vec3 Curve::catmullRom(const float t, const float tension, const Vec3 p0, const 
 }
 
 
-Vec3 Curve::catumullRomTangent(const float t, const float tension, const Vec3 p0, const Vec3 p1, const Vec3 p2, const Vec3 p3)
+Vec3 Curve::catmullRomTangent(const float t, const float tension, const Vec3 p0, const Vec3 p1, const Vec3 p2, const Vec3 p3)
 {
     assert(t >= 0.0f && t <= 1.0f);
     assert(tension >= 0.0f && tension <= 1.0f);

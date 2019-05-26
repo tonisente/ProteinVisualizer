@@ -135,6 +135,7 @@
     <ClCompile Include="curve.cpp" />
     <ClCompile Include="d3d.cpp" />
     <ClCompile Include="graphics.cpp" />
+    <ClCompile Include="helixBuilder.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="light.cpp" />
     <ClCompile Include="lightShader.cpp" />
@@ -152,6 +153,7 @@
     <ClInclude Include="curve.h" />
     <ClInclude Include="d3d.h" />
     <ClInclude Include="graphics.h" />
+    <ClInclude Include="helixBuilder.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="light.h" />
     <ClInclude Include="lightShader.h" />

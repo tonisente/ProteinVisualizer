@@ -59,31 +59,61 @@ void ProteinBuilder::buildProtein(BuildType type)
 void ProteinBuilder::constructCompleteWireframe()
 {
     const Model& model = m_proteinData.models[0]; // todo: choose which model
+
     for (int i = 0; i < model.size(); ++i)
     {   
-        std::vector<Vec3> points = filterChain(model[i]);
-
-        std::vector<float> dist;
-        for (int j = 1; j < points.size(); ++j)
-        { 
-            Vec3 a = points[j - 1];
-            Vec3 b = points[j];
-            dist.push_back(sqrt(pow(a.x - b.x, 2) + pow(a.y - b.y, 2) + pow(a.z - b.z, 2)));
-        }
+        std::vector<Vec3> basePoints = filterChain(model[i]);
 
         std::vector<Vertex> wireframeVertices;
         std::vector<uint> wireframeIndices;
 
         if (m_buildType == BuildType::WIREFRAME)
         {
-            m_tubeBuilder.buildWireframe(points, wireframeVertices, wireframeIndices);
+            m_tubeBuilder.buildWireframe(basePoints, wireframeVertices, wireframeIndices);
         }
         else if (m_buildType == BuildType::CURVEDWIREFRAME)
         {
-            m_tubeBuilder.buildCurvedWireframe(points, wireframeVertices, wireframeIndices);
+            std::vector<Vec3> extendedPoints = generateExtendedPoints(basePoints).first;
+            m_tubeBuilder.buildWireframe(extendedPoints, wireframeVertices, wireframeIndices);
         }
 
         bufferCombinder(wireframeVertices, wireframeIndices);
+    }
+}
+
+
+void ProteinBuilder::constructTertiary()
+{
+    const Model& model = m_proteinData.models[0];
+
+    for (int i = 0; i < model.size(); ++i)
+    {
+        Chain chain = model[i];
+
+        std::vector<Vertex> wireframeVertices;
+        std::vector<uint> wireframeIndices;
+
+        std::vector<Vec3> basePoints = filterChain(chain);
+        std::pair<std::vector<Vec3>, std::vector<Vec3>> extended = generateExtendedPoints(basePoints);
+        std::vector<Vec3> extendedPoints = extended.first;
+        std::vector<Vec3> extendedPointsNormals = extended.second;
+
+        uint wireframeStartIndex = 0;
+        for (const std::vector<std::pair<uint, uint>> index : m_helixSheetChainIndex)
+        {
+            // step 1 - build previous wireframe (till helix/sheet start)
+
+
+            // step 2 - build structure
+
+
+            // step 3 - update wireframe start index
+
+        }
+
+        // step 4 - build the rest of the wireframe
+
+
     }
 }
 
@@ -121,14 +151,37 @@ std::vector<Vec3> ProteinBuilder::filterChain(const Chain& chain) const
 }
 
 
-void ProteinBuilder::constructTertiary()
+std::pair<std::vector<Vec3>, std::vector<Vec3>> ProteinBuilder::generateExtendedPoints(const std::vector<Vec3>& basePoints) const
 {
-    const Model& model = m_proteinData.models[0];
+    std::vector<Vec3> extendedPoints;
+    std::vector<Vec3> tangents;
+    uint n = basePoints.size();
+    extendedPoints.reserve(n * partsPerCurveSegment);
+    tangents.reserve(n * partsPerCurveSegment);
 
-    for (const Chain& chain : model)
+    Vec3 p0, p1, p2, p3;
+    for (uint i = 0; i < n - 1; ++i)
     {
-        std::vector<Vec3> filteredChain = filterChain(chain);
+        p0 = (i == 0) ? basePoints[1].opposite(basePoints[0]) : basePoints[i - 1];
+        p1 = basePoints[i];
+        p2 = basePoints[i + 1];
+        p3 = (i == n - 2) ? basePoints[n - 2].opposite(basePoints[n - 1]) : basePoints[i + 2];
 
+        for (int j = 0; j < partsPerCurveSegment; ++j)
+        {
+            float t = (float)j / float(partsPerCurveSegment);
+            Vec3 point = Curve::catmullRom(t, curveTension, p0, p1, p2, p3);
+            Vec3 tangent = Curve::catmullRom(t, curveTension, p0, p1, p2, p3);
+
+            extendedPoints.push_back(point);
+            tangents.push_back(tangent);
+        }
     }
 
+    // add last point
+    extendedPoints.push_back(basePoints[n - 1]);
+    tangents.push_back(Curve::catmullRomTangent(1.0f, curveTension, p0, p1, p2, p3));
+
+    return std::make_pair(extendedPoints, tangents);
 }
+

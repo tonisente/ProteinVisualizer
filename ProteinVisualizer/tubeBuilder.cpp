@@ -18,37 +18,6 @@ TubeBuilder::~TubeBuilder()
 }
 
 
-void TubeBuilder::buildCurvedWireframe(const std::vector<Vec3>& atoms, std::vector<Vertex>& vertices, std::vector<uint>& indices) const
-{
-    std::vector<Vec3> points;
-    uint n = atoms.size();
-    points.reserve(n * partsPerCurveSegment);
-
-    {   // generate all points for curve
-        Vec3 p0, p1, p2, p3;
-        for (uint i = 0; i < n - 1; ++i)
-        {
-            p0 = (i == 0) ? atoms[1].opposite(atoms[0]) : atoms[i - 1];
-            p1 = atoms[i];
-            p2 = atoms[i + 1];
-            p3 = (i == n - 2) ? atoms[n - 2].opposite(atoms[n - 1]) : atoms[i + 2];
-
-            for (int j = 0; j < partsPerCurveSegment; ++j)
-            {
-                float t = (float)j / float(partsPerCurveSegment);
-                Vec3 point = Curve::catmullRom(t, tension, p0, p1, p2, p3);
-
-                points.push_back(point);
-            }
-        }
-
-        // add last point
-        points.push_back(atoms[n - 1]);
-    }
-
-    buildWireframe(points, vertices, indices);
-}
-
 void TubeBuilder::buildWireframe(const std::vector<Vec3>& points, std::vector<Vertex>& vertices, std::vector<uint>& indices) const
 {
     uint n = points.size();

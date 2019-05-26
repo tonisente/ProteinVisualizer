@@ -14,8 +14,6 @@ typedef unsigned int uint;
 class ProteinBuilder
 {
 public:
-    ProteinBuilder(const ProteinData& proteinData, std::vector<Vertex>& m_vertices, std::vector<uint>& indices);
-
     enum class BuildType
     {
         WIREFRAME,
@@ -23,6 +21,10 @@ public:
         TERTIARY
     };
 
+    const float curveTension = 0.9f;
+    unsigned int partsPerCurveSegment = 8;
+
+    ProteinBuilder(const ProteinData& proteinData, std::vector<Vertex>& m_vertices, std::vector<uint>& indices);
     void buildProtein(BuildType buildType);
 
 private:
@@ -34,14 +36,17 @@ private:
     void bufferCombinder(const std::vector<Vertex>& srcVertex, const std::vector<uint>& srcIndex);
 
     std::vector<Vec3> filterChain(const Chain& chain) const;
+    std::pair<std::vector<Vec3>, std::vector<Vec3>> generateExtendedPoints(const std::vector<Vec3>& basePoints) const;
 
-    TubeBuilder m_tubeBuilder;
-    unsigned int m_maxIndex = 0;
     const ProteinData& m_proteinData;
     std::vector<Vertex>& m_vertices;
     std::vector<uint>& m_indices;
     BuildType m_buildType;
-    std::vector<std::vector<std::pair<uint, uint>>> m_helixSheetChainIndex;
     uint m_noChains;
+
+    TubeBuilder m_tubeBuilder;
+
+    unsigned int m_maxIndex = 0;
+    std::vector<std::vector<std::pair<uint, uint>>> m_helixSheetChainIndex;
 };
 
