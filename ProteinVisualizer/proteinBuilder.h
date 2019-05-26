@@ -8,6 +8,9 @@
 
 typedef unsigned int uint;
 
+#define HELIX 0
+#define SHEET 1
+
 class ProteinBuilder
 {
 public:
@@ -34,10 +37,11 @@ private:
 
     TubeBuilder m_tubeBuilder;
     unsigned int m_maxIndex = 0;
-
     const ProteinData& m_proteinData;
     std::vector<Vertex>& m_vertices;
     std::vector<uint>& m_indices;
     BuildType m_buildType;
+    std::vector<std::vector<std::pair<uint, uint>>> m_helixSheetChainIndex;
+    uint m_noChains;
 };
 

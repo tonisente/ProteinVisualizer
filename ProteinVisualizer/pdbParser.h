@@ -20,6 +20,9 @@ private:
     static Atom parseAtom(const std::string& line);
     static Helix parseHelix(const std::string& line);
 
+    /** destBuff should have enough space required  */
+    static void trimSpace(const std::string& line, int startIdx, int endIdx, char* destBuff);
+
     PDBParser() {};
 };
 

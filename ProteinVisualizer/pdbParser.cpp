@@ -1,5 +1,6 @@
 #include "pdbParser.h"
 
+#include <cassert>
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -37,6 +38,10 @@ ProteinData PDBParser::parse(const std::string& filename)
         {
             Atom atom = parseAtom(line);
             chain.push_back(atom);
+            //if (/*atom.alternateLocationIndicator == ' ' || atom.alternateLocationIndicator == 'A'*/ atom.serialNumber == 238)
+            //{
+            //    chain.push_back(atom);
+            //}
         }
         else if (!line.rfind("TER", 0))
         {
@@ -54,53 +59,74 @@ ProteinData PDBParser::parse(const std::string& filename)
         }
         else if (!line.rfind("HELIX", 0))
         {
-            Helix helix = parseHelix(line);
-            helices.push_back(helix);            
+            //Helix helix = parseHelix(line);
+            //helices.push_back(helix);            
         }
     }
     
     return proteinData;
 }
- 
+
+
 Atom PDBParser::parseAtom(const std::string& line)
 {
     Atom atom;
+    char buffer[35];
 
-    sscanf
-    (
-        line.c_str(),
-        "ATOM "\
-        "%6d"\
-        "%4s"\
-        "%c"\
-        "%3s "\
-        "%c"\
-        "%3d"\
-        "%c"\
-        "%f"\
-        "%f"\
-        "%f"\
-        "%f"\
-        "%f"\
-        "      %4s"\
-        "%2s",
-        &atom.serialNumber,
-        atom.name,
-        &atom.alternateLocationIndicator,
-        atom.residueName,
-        &atom.chainID,
-        &atom.residueSeqNumber,
-        &atom.codeForInsertion,
-        &atom.xCoord,
-        &atom.yCoord,
-        &atom.zCoord,
-        &atom.occupancy,
-        &atom.temperatureFactor,
-        atom.segmentID,
-        atom.elementSymbol
-    );
+    // atom serial number
+    trimSpace(line, 5, 10, buffer);
+    atom.serialNumber = atoi(buffer);
 
-    // reverse point (crystallography?)
+    // atom name
+    trimSpace(line, 12, 15, buffer);
+    strcpy(atom.name, buffer);
+
+    // alternate location indicator
+    atom.altLocationIndicator = line[16];
+
+    // residue name
+    trimSpace(line, 17, 19, buffer);
+    strcpy(atom.residueName, buffer);
+
+    // chain identifier
+    atom.chainID = line[21];
+
+    // residue sequence number
+    trimSpace(line, 22, 25, buffer);
+    atom.residueSeqNumber = atoi(buffer);
+
+    // code for insertion
+    atom.codeForInsertion = line[26];
+
+    // x coord
+    trimSpace(line, 30, 37, buffer);
+    atom.xCoord = atof(buffer);
+
+    // y coord
+    trimSpace(line, 38, 45, buffer);
+    atom.yCoord = atof(buffer);
+
+    // z coord
+    trimSpace(line, 46, 53, buffer);
+    atom.zCoord = atof(buffer);
+
+    // occupancy
+    trimSpace(line, 54, 59, buffer);
+    atom.occupancy = atof(buffer);
+
+    // temperature factor
+    trimSpace(line, 60, 65, buffer);
+    atom.temperatureFactor = atof(buffer);
+
+    // segment identifier
+    trimSpace(line, 72, 75, buffer);
+    strcpy(atom.segmentID, buffer);
+
+    // element symbol
+    trimSpace(line, 76, 77, buffer);
+    strcpy(atom.elementSymbol, buffer);
+
+    // reverse point (crystallography?!)
     atom.xCoord = -atom.xCoord;
     atom.yCoord = -atom.yCoord;
     atom.zCoord = -atom.zCoord;
@@ -109,40 +135,43 @@ Atom PDBParser::parseAtom(const std::string& line)
 }
 
 
-Helix PDBParser::parseHelix(const std::string& line)
+void PDBParser::trimSpace(const std::string& line, int startIdx, int endIdx, char* destBuff)
 {
-    Helix helix;
-    sscanf
-    (
-        line.c_str(),
-        "HELIX "\
-        "%3d "\
-        "%3s "\
-        "%3s "\
-        "%c "\
-        "%4d"\
-        "%c "\
-        "%3s "\
-        "%c"\
-        "%4d"\
-        "%c"\
-        "%2d"\
-        "%30[0-9a-zA-Z ]"\
-        "%d",
-        &helix.serialNumber,
-        &helix.ID,
-        &helix.initialResidueName,
-        &helix.chainID,
-        &helix.residueSeqNumber,
-        &helix.codeForInsertion,
-        &helix.terminalResidueName,
-        &helix.chainID2,
-        &helix.residueSeqNumber2,
-        &helix.codeForInsertion2,
-        &helix.type,
-        &helix.comment,
-        &helix.length
-    );
+    assert(startIdx <= endIdx);
+    assert(line.length() > endIdx);
 
-    return helix;
+    while (startIdx <= endIdx)
+    {
+        if (line[startIdx] == ' ')
+        {
+            startIdx++;
+        }
+        else
+        {
+            break;
+        }
+    }
+    while (startIdx <= endIdx)
+    {
+        if (line[endIdx] == ' ')
+        {
+            endIdx--;
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    // copy string
+    int j = 0;
+    for (int i = startIdx; i <= endIdx; ++i)
+    {
+        destBuff[j++] = line[i];
+    }
+    destBuff[j] = '\0';
+
+    return;
 }
+
+

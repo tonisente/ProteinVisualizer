@@ -8,7 +8,7 @@ struct Atom
 {
     uint serialNumber;
     char name[5];
-    char alternateLocationIndicator;
+    char altLocationIndicator;
     char residueName[4];
     char chainID;
     int residueSeqNumber;
@@ -35,7 +35,7 @@ struct Helix
     int residueSeqNumber2;
     char codeForInsertion2;
     int type;
-    char comment[50];
+    char comment[32];
     int length;
 };
 

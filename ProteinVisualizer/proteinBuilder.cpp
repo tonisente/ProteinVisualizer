@@ -8,6 +8,28 @@ ProteinBuilder::ProteinBuilder(const ProteinData& proteinData, std::vector<Verte
     m_vertices{ vertices },
     m_indices{ indices }
 {
+    m_noChains = proteinData.models[0].size();
+
+    std::vector<std::pair<uint, uint>> vpuiui;
+    m_helixSheetChainIndex.insert(m_helixSheetChainIndex.begin(), m_noChains, vpuiui);
+
+    // indexing helicis
+    for (int i = 0; i < proteinData.alphaHelicis.size(); ++i)
+    {
+        Helix helix = proteinData.alphaHelicis[i];
+        uint index = helix.chainID - 'A';
+        m_helixSheetChainIndex[i].push_back(std::make_pair(HELIX, helix.serialNumber - 1));
+    }
+    //// indexing sheets
+    //for (int i = 0; i < proteinData.betaSheets.size(); ++i)
+    //{
+    //    Sheet sheet = proteinData.betaSheets[i];
+    //    // todo .. to be continued.
+    //}
+    for (auto& elem : m_helixSheetChainIndex)
+    {
+        std::sort(elem.begin(), elem.end(), [](const std::pair<uint, uint>& a, const std::pair<uint, uint>& b) { return a.second < b.second; });
+    }
 }
 
 
@@ -40,6 +62,14 @@ void ProteinBuilder::constructCompleteWireframe()
     for (int i = 0; i < model.size(); ++i)
     {   
         std::vector<Vec3> points = filterChain(model[i]);
+
+        std::vector<float> dist;
+        for (int j = 1; j < points.size(); ++j)
+        { 
+            Vec3 a = points[j - 1];
+            Vec3 b = points[j];
+            dist.push_back(sqrt(pow(a.x - b.x, 2) + pow(a.y - b.y, 2) + pow(a.z - b.z, 2)));
+        }
 
         std::vector<Vertex> wireframeVertices;
         std::vector<uint> wireframeIndices;
@@ -93,5 +123,12 @@ std::vector<Vec3> ProteinBuilder::filterChain(const Chain& chain) const
 
 void ProteinBuilder::constructTertiary()
 {
+    const Model& model = m_proteinData.models[0];
+
+    for (const Chain& chain : model)
+    {
+        std::vector<Vec3> filteredChain = filterChain(chain);
+
+    }
 
 }

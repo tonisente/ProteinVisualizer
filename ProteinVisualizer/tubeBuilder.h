@@ -15,10 +15,10 @@ public:
     TubeBuilder(unsigned int noSides, float thicknes);
     ~TubeBuilder();
 
-    unsigned int sides = 20;
-    unsigned int partsPerCurveSegment = 20;
+    unsigned int sides = 5;
+    unsigned int partsPerCurveSegment = 5;
     float thicknes = 0.2f;
-    float tension = 1.0f; // 0.0f == tight curve ; 1.0f == lose curve
+    float tension = 0.9f; // 0.0f == tight curve ; 1.0f == lose curve
     Vec3 color{ 1.0f, 1.0f, 0.5f };
 
     void buildCurvedWireframe(const std::vector<Vec3>& atoms, std::vector<Vertex>& vertices, std::vector<uint>& indices) const;
