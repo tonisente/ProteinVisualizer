@@ -1,4 +1,5 @@
 #pragma once
+#include "helixBuilder.h"
 #include "vertex.h"
 #include "proteinData.h"
 #include "tubeBuilder.h"
@@ -37,6 +38,7 @@ private:
 
     std::vector<Vec3> filterChain(const Chain& chain) const;
     std::pair<std::vector<Vec3>, std::vector<Vec3>> generateExtendedPoints(const std::vector<Vec3>& basePoints) const;
+    void centralizePoints(std::vector<Vec3>& points) const;
 
     const ProteinData& m_proteinData;
     std::vector<Vertex>& m_vertices;
@@ -44,6 +46,7 @@ private:
     BuildType m_buildType;
     uint m_noChains;
 
+    HelixBuilder m_helixBuilder;
     TubeBuilder m_tubeBuilder;
 
     unsigned int m_maxIndex = 0;

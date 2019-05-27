@@ -16,6 +16,5 @@ public:
     float width = 0.5f;
     Vec3 color{ 1.0f, 1.0f, 0.5f };
 
-    void buildHelix(const std::vector<Vec3>& points, const std::vector<Vec3>& normals, std::vector<Vertex>& vertices, std::vector<uint>& indices);
+    void buildHelix(const std::vector<Vec3>& points, const std::vector<Vec3>& tangentVectors, std::vector<Vertex>& vertices, std::vector<uint>& indices);
 };
-

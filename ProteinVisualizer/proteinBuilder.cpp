@@ -94,10 +94,14 @@ void ProteinBuilder::constructTertiary()
         std::vector<uint> wireframeIndices;
 
         std::vector<Vec3> basePoints = filterChain(chain);
+        centralizePoints(basePoints);
         std::pair<std::vector<Vec3>, std::vector<Vec3>> extended = generateExtendedPoints(basePoints);
         std::vector<Vec3> extendedPoints = extended.first;
-        std::vector<Vec3> extendedPointsNormals = extended.second;
+        std::vector<Vec3> extendedPointsTangents = extended.second;
 
+        m_helixBuilder.buildHelix(extendedPoints, extendedPointsTangents, wireframeVertices, wireframeIndices);
+
+        /*
         uint wireframeStartIndex = 0;
         for (const std::vector<std::pair<uint, uint>> index : m_helixSheetChainIndex)
         {
@@ -112,8 +116,8 @@ void ProteinBuilder::constructTertiary()
         }
 
         // step 4 - build the rest of the wireframe
-
-
+        */
+        bufferCombinder(wireframeVertices, wireframeIndices);
     }
 }
 
@@ -185,3 +189,33 @@ std::pair<std::vector<Vec3>, std::vector<Vec3>> ProteinBuilder::generateExtended
     return std::make_pair(extendedPoints, tangents);
 }
 
+
+void ProteinBuilder::centralizePoints(std::vector<Vec3>& points) const
+{
+    assert(points.size() > 0);
+
+    Vec3 minValue;
+    Vec3 maxValue;
+
+    minValue = maxValue = points[0];
+
+    for (auto p : points)
+    {
+        if (p.x < minValue.x) minValue.x = p.x;
+        if (p.y < minValue.y) minValue.y = p.y;
+        if (p.z < minValue.z) minValue.z = p.z;
+
+        if (p.x > maxValue.x) maxValue.x = p.x;
+        if (p.y > maxValue.y) maxValue.y = p.y;
+        if (p.z > maxValue.z) maxValue.z = p.z;
+    }
+
+    Vec3 midValue = (minValue + maxValue) / 2.0f;
+
+    for (auto& p : points)
+    {
+        p = p - midValue;
+    }
+
+    return;
+}

@@ -72,7 +72,7 @@ bool ProteinModel::InitializeBuffers(ID3D11Device* device)
         std::vector<unsigned int> generatedIndices;
 
         ProteinBuilder proteinBuilder{ proteinData, generatedVertecis, generatedIndices };
-        proteinBuilder.buildProtein(ProteinBuilder::BuildType::CURVEDWIREFRAME);
+        proteinBuilder.buildProtein(ProteinBuilder::BuildType::TERTIARY);
 
         m_vertexCount = generatedVertecis.size();
         m_indexCount = generatedIndices.size();

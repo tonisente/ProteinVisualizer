@@ -25,6 +25,7 @@ struct Vec3
     friend Vec3 operator/(const float lambda, const Vec3&v);
     Vec3 operator+(const Vec3& other) const;
     Vec3 operator-(const Vec3& other) const;
+
     Vec3 normalized() const;
     Vec3 opposite(const Vec3& center) const;
     static Vec3 cross(const Vec3& a, const Vec3& b);
