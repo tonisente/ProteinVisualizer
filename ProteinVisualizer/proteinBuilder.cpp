@@ -63,6 +63,7 @@ void ProteinBuilder::constructCompleteWireframe()
     for (int i = 0; i < model.size(); ++i)
     {   
         std::vector<Vec3> basePoints = filterChain(model[i]);
+        centralizePoints(basePoints);
 
         std::vector<Vertex> wireframeVertices;
         std::vector<uint> wireframeIndices;
@@ -99,7 +100,8 @@ void ProteinBuilder::constructTertiary()
         std::vector<Vec3> extendedPoints = extended.first;
         std::vector<Vec3> extendedPointsTangents = extended.second;
 
-        m_helixBuilder.buildHelix(extendedPoints, extendedPointsTangents, wireframeVertices, wireframeIndices);
+        //m_helixBuilder.buildHelix(extendedPoints, extendedPointsTangents, partsPerCurveSegment, wireframeVertices, wireframeIndices);
+        m_helixBuilder.buildHelix_v2(basePoints, wireframeVertices, wireframeIndices);
 
         /*
         uint wireframeStartIndex = 0;
@@ -118,6 +120,8 @@ void ProteinBuilder::constructTertiary()
         // step 4 - build the rest of the wireframe
         */
         bufferCombinder(wireframeVertices, wireframeIndices);
+        //m_tubeBuilder.buildWireframe(basePoints, wireframeVertices, wireframeIndices);
+        //bufferCombinder(wireframeVertices, wireframeIndices);
     }
 }
 
@@ -175,7 +179,7 @@ std::pair<std::vector<Vec3>, std::vector<Vec3>> ProteinBuilder::generateExtended
         {
             float t = (float)j / float(partsPerCurveSegment);
             Vec3 point = Curve::catmullRom(t, curveTension, p0, p1, p2, p3);
-            Vec3 tangent = Curve::catmullRom(t, curveTension, p0, p1, p2, p3);
+            Vec3 tangent = Curve::catmullRomTangent(t, curveTension, p0, p1, p2, p3);
 
             extendedPoints.push_back(point);
             tangents.push_back(tangent);

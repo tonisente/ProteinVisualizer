@@ -22,8 +22,8 @@ public:
         TERTIARY
     };
 
-    const float curveTension = 0.9f;
-    unsigned int partsPerCurveSegment = 8;
+    const float curveTension = 1.0f;
+    unsigned int partsPerCurveSegment = 10;
 
     ProteinBuilder(const ProteinData& proteinData, std::vector<Vertex>& m_vertices, std::vector<uint>& indices);
     void buildProtein(BuildType buildType);

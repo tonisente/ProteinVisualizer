@@ -15,7 +15,7 @@ public:
     TubeBuilder(unsigned int noSides, float thicknes);
     ~TubeBuilder();
 
-    unsigned int sides = 8;
+    unsigned int sides = 16;
     float thicknes = 0.2f;
     Vec3 color{ 1.0f, 1.0f, 0.5f };
 
