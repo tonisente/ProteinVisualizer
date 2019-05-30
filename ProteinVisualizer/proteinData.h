@@ -41,7 +41,30 @@ struct Helix
 
 struct Sheet
 {
+    int strandNumber;
+    char sheetID[4];
+    int noStrands;
+    char initialRedisueName[4];
+    char chainID;
+    int residueSeqNumber;
+    char codeForInsertions;
+    char terminalResidueName[4];
+    char chainID2;
+    int residueSeqNumber2;
+    char codeForInsertions2;
+    int strandSense;
 
+    char startAtomName[5];
+    char startResidueName[4];
+    char startChainID;
+    int startResidueSeqNumber = -1;
+    char startCodeForInsertions;
+
+    char endAtomName[5];
+    char endResidueName[4];
+    char endChainID;
+    int endResidueSeqNumber = -1;
+    char endCodeForInsertions;
 };
 
 using Chain = std::vector<Atom>;

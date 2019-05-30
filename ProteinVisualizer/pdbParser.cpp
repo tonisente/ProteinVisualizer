@@ -61,6 +61,11 @@ ProteinData PDBParser::parse(const std::string& filename)
             Helix helix = parseHelix(line);
             helices.push_back(helix);            
         }
+        else if (!line.rfind("SHEET", 0))
+        {
+            Sheet sheet = parseSheet(line);
+            sheets.push_back(sheet);
+        }
     }
     
     return proteinData;
@@ -191,6 +196,88 @@ Helix PDBParser::parseHelix(const std::string& line)
 }
 
 
+Sheet PDBParser::parseSheet(const std::string& line)
+{
+    Sheet sheet;
+    char  buffer[35];
+
+    // strand number
+    trimAndStore(line, 8, 9, &sheet.strandNumber);
+
+    // sheet identifier 
+    trimAndStore(line, 11, 13, sheet.sheetID);
+
+    // number of strands
+    trimAndStore(line, 14, 15, &sheet.noStrands);
+
+    // initial residue name
+    trimAndStore(line, 17, 19, sheet.initialRedisueName);
+
+    // chain ID
+    sheet.chainID = line[21];
+
+    // residue sequence number
+    trimAndStore(line, 22, 25, &sheet.residueSeqNumber);
+
+    // code for insertions of residues
+    sheet.codeForInsertions = line[26];
+
+    // terminal residue name
+    trimAndStore(line, 28, 30, sheet.terminalResidueName);
+
+    // chain identifier
+    sheet.chainID2 = line[32];
+
+    // residue sequence number
+    trimAndStore(line, 33, 36, &sheet.residueSeqNumber2);
+
+    // code for insertions of residue
+    sheet.codeForInsertions2;
+
+    // strand sense with respect to previous
+    trimAndStore(line, 38, 39, &sheet.strandSense);
+
+
+    /* START RESIDUE */
+    {
+        // atom name
+        trimAndStore(line, 41, 44, sheet.startAtomName);
+
+        // residue name
+        trimAndStore(line, 45, 47, sheet.startResidueName);
+
+        // chain id
+        sheet.startChainID = line[49];
+
+        // residue sequence number
+        trimAndStore(line, 50, 53, &sheet.startResidueSeqNumber);
+
+        // code for indertions of residues
+        sheet.startCodeForInsertions = line[54];
+    }
+
+    /* END RESIDUE */
+    {   
+        // atom name
+        trimAndStore(line, 56, 59, sheet.endAtomName);
+
+        // residue name
+        trimAndStore(line, 60, 62, sheet.endResidueName);
+
+        // chain id
+        sheet.endChainID = line[64];
+
+        // residue sequence number
+        trimAndStore(line, 65, 68, &sheet.endResidueSeqNumber);
+
+        // code for indertions of residues
+        sheet.endCodeForInsertions = line[69];
+    }
+
+    return sheet;
+}
+
+
 void PDBParser::trimSpace(const std::string& line, int startIdx, int endIdx, char* destBuff)
 {
     assert(startIdx <= endIdx);
@@ -231,3 +318,21 @@ void PDBParser::trimSpace(const std::string& line, int startIdx, int endIdx, cha
 }
 
 
+void PDBParser::trimAndStore(const std::string& line, int startIdx, int endIdx, char* dest)
+{
+    trimSpace(line, startIdx, endIdx, dest);
+}
+
+void PDBParser::trimAndStore(const std::string& line, int startIdx, int endIdx, int* dest)
+{
+    char buffer[15];
+    trimSpace(line, startIdx, endIdx, buffer);
+    *dest = atoi(buffer);
+}
+
+void PDBParser::trimAndStore(const std::string& line, int startIdx, int endIdx, float* dest)
+{
+    char buffer[15];
+    trimSpace(line, startIdx, endIdx, buffer);
+    *dest = atof(buffer);
+}

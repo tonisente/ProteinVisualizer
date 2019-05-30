@@ -66,13 +66,13 @@ bool ProteinModel::InitializeBuffers(ID3D11Device* device)
 
     {   // build model
         PDBParser& parser = PDBParser::getInstance();
-        ProteinData proteinData = parser.parse("6niv.pdb");
+        ProteinData proteinData = parser.parse("sheetTest6nfr.pdb");
 
         std::vector<Vertex> generatedVertecis;
         std::vector<unsigned int> generatedIndices;
 
         ProteinBuilder proteinBuilder{ proteinData, generatedVertecis, generatedIndices };
-        proteinBuilder.buildProtein(ProteinBuilder::BuildType::TERTIARY);
+        proteinBuilder.buildProtein(ProteinBuilder::BuildType::WIREFRAME);
 
         m_vertexCount = generatedVertecis.size();
         m_indexCount = generatedIndices.size();
