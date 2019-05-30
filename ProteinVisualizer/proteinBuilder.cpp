@@ -20,12 +20,12 @@ ProteinBuilder::ProteinBuilder(const ProteinData& proteinData, std::vector<Verte
         uint index = helix.chainID - 'A';
         m_helixSheetChainIndex[i].push_back(std::make_pair(HELIX, helix.serialNumber - 1));
     }
-    //// indexing sheets
-    //for (int i = 0; i < proteinData.betaSheets.size(); ++i)
-    //{
-    //    Sheet sheet = proteinData.betaSheets[i];
-    //    // todo .. to be continued.
-    //}
+    // indexing sheets
+    for (int i = 0; i < proteinData.betaSheets.size(); ++i)
+    {
+        Sheet sheet = proteinData.betaSheets[i];
+        // todo .. to be continued.
+    }
     for (auto& elem : m_helixSheetChainIndex)
     {
         std::sort(elem.begin(), elem.end(), [](const std::pair<uint, uint>& a, const std::pair<uint, uint>& b) { return a.second < b.second; });
