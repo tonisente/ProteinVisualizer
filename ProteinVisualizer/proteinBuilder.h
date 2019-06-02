@@ -29,16 +29,18 @@ public:
     void buildProtein(BuildType buildType);
 
 private:
-    void constructCompleteWireframe();
+    void constructWireframe();
     void constructAlphaHelix();
     void constructTertiary();
 
     /** Puts all vertices and indices from source vertex/index buffer into original vertex/index buffer. */
     void bufferCombinder(const std::vector<Vertex>& srcVertex, const std::vector<uint>& srcIndex);
 
-    std::vector<Vec3> filterChain(const Chain& chain) const;
-    std::pair<std::vector<Vec3>, std::vector<Vec3>> generateExtendedPoints(const std::vector<Vec3>& basePoints) const;
-    void centralizePoints(std::vector<Vec3>& points) const;
+    std::vector<Vec3> alphaCarbons(const Chain& chain) const;
+    std::vector<Vec3> generateExtendedPoints(Vec3 p0, const std::vector<Vec3>& basePoints, Vec3 pn) const;
+    void centralizePoints(std::vector<Vertex>& points) const;
+    Vec3 getPreviousPoint(const std::vector<Vec3>& points, uint index);
+    Vec3 getNextPoint(const std::vector<Vec3>& points, uint index); 
 
     const ProteinData& m_proteinData;
     std::vector<Vertex>& m_vertices;
@@ -49,7 +51,6 @@ private:
     HelixBuilder m_helixBuilder;
     TubeBuilder m_tubeBuilder;
 
-    unsigned int m_maxIndex = 0;
-    std::vector<std::vector<std::pair<uint, uint>>> m_helixSheetChainIndex;
+    uint m_maxIndex = 0;
 };
 

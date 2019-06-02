@@ -20,6 +20,8 @@ TubeBuilder::~TubeBuilder()
 
 void TubeBuilder::buildWireframe(const std::vector<Vec3>& points, std::vector<Vertex>& vertices, std::vector<uint>& indices) const
 {
+    if (points.size() == 0) return;
+
     uint n = points.size();
     vertices.clear();
     indices.clear();

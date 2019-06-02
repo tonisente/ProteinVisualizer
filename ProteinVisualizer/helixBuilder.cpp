@@ -262,4 +262,90 @@ void HelixBuilder::buildHelix_v2(const std::vector<Vec3>& basePoints, std::vecto
 //    }
 //}
 
+void HelixBuilder::buildRibbon(const Vec3 pBefore, const std::vector<Vec3>& points, const Vec3 pAfter, std::vector<Vertex>& vertices, std::vector<uint>& indices)
+{
+    uint n = points.size();
+    int parts = 10;
 
+    for (int i = 0; i < n - 1; ++i)
+    {
+        CoordSystem s1, s2;
+        Vec3 p0 = i == 0 ? pBefore : points[i - 1];
+        Vec3 p1 = points[i];
+        Vec3 p2 = points[i + 1];
+        Vec3 p3 = i == n - 2 ? pAfter : points[i + 2];
+
+        s1.initFromPoints(p0, p1, p2);
+        s2.initFromPoints(p1, p2, p3);
+
+        std::vector<Vec3> points;
+        std::vector<Vec3> tangents;
+
+        for (int j = 0; j < parts; ++j)
+        {
+            float t = float(j) / float(parts);
+            Vec3 curvePoint = Curve::catmullRom(t, 1.0f, p0, p1, p2, p3);
+            Vec3 curveTangent = Curve::catmullRomTangent(t, 1.0f, p0, p1, p2, p3);
+
+            CoordSystem s = coordinateSlepr(t, s1, s2, curveTangent);
+
+            Vec3 up = s.y;
+            Vec3 right = s.x;
+
+            {
+                Vec3 downLeft = curvePoint - up * height - right * width;
+                Vec3 downRight = curvePoint - up * height + right * width;
+                Vec3 upLeft = curvePoint + up * height - right * width;
+                Vec3 upRight = curvePoint + up * height + right * width;
+
+                vertices.push_back(Vertex(downLeft, right * (-1), color));
+                vertices.push_back(Vertex(downRight, right, color));
+                vertices.push_back(Vertex(upLeft, right * (-1), color));
+                vertices.push_back(Vertex(upRight, right, color));
+            }
+        }
+    }
+
+
+    {   // generate indices
+        for (int i = 0; i < (parts + 1) * points.size(); ++i)
+        {
+            int base = i * 4;
+             
+            indices.push_back(base);
+            indices.push_back(base + 4);
+            indices.push_back(base + 4 + 2);
+
+            indices.push_back(base);
+            indices.push_back(base + 4 + 2);
+            indices.push_back(base + 2);
+
+
+            indices.push_back(base + 2);
+            indices.push_back(base + 4 + 3);
+            indices.push_back(base + 3);
+
+            indices.push_back(base + 2);
+            indices.push_back(base + 4 + 2);
+            indices.push_back(base + 4 + 3);
+
+
+            indices.push_back(base + 1);
+            indices.push_back(base + 3);
+            indices.push_back(base + 4 + 3);
+
+            indices.push_back(base + 1);
+            indices.push_back(base + 4 + 3);
+            indices.push_back(base + 4 + 1);
+
+
+            indices.push_back(base);
+            indices.push_back(base + 1);
+            indices.push_back(base + 4 + 1);
+
+            indices.push_back(base);
+            indices.push_back(base + 4 + 1);
+            indices.push_back(base + 4);
+        }
+    }
+}

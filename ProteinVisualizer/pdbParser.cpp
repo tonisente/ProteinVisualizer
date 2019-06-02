@@ -68,7 +68,8 @@ ProteinData PDBParser::parse(const std::string& filename)
         }
     }
 
-    proteinData.alphaHelicis = std::move()
+    proteinData.alphaHelicis = std::move(helices);
+    proteinData.betaSheets = std::move(sheets);
     
     return proteinData;
 }

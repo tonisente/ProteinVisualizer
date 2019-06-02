@@ -61,13 +61,6 @@ Vec3 Vec3::normalized() const
     return { x / param, y / param, z / param };
 }
 
-Vec3 Vec3::opposite(const Vec3& center) const
-{
-    Vec3 centralized = *this - center;
-    Vec3 oppositePoint = center - centralized;
-    return oppositePoint;
-}
-
 Vec3 Vec3::cross(const Vec3& a, const Vec3& b)
 {
     return
