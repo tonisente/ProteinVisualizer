@@ -12,83 +12,83 @@ HelixBuilder::~HelixBuilder()
 }
 
 
-void HelixBuilder::buildHelix(const std::vector<Vec3>& points, const std::vector<Vec3>& tangentVectors, uint partsPerCurveSegment, std::vector<Vertex>& vertices, std::vector<uint>& indices)
-{
-    assert(points.size() >= 3);
-    assert(points.size() == tangentVectors.size());
-
-    uint n = points.size();
-
-    vertices.clear();
-    indices.clear();
-    vertices.reserve(2 * n);
-    indices.reserve(6 * (n - 1));
-
-    {   // generate vertices
-        for (int i = 1; i < n - 1; i++)
-        {
-            //Vec3 tangent = (points[i + 1] - points[i - 1]).normalized();
-            Vec3 tangent = tangentVectors[i].normalized();
-            Vec3 helpVec = (points[i] - points[i - 1]);
-            Vec3 up = (Vec3::cross(tangent, helpVec)).normalized();
-            Vec3 right = (Vec3::cross(up, tangent)).normalized();
-
-            {
-                Vec3 downLeft = points[i] - up * height - right * width;
-                Vec3 downRight = points[i] - up * height + right * width;
-                Vec3 upLeft = points[i] + up * height - right * width;
-                Vec3 upRight = points[i] + up * height + right * width;
-
-                vertices.push_back(Vertex(downLeft, right * (-1), color));
-                vertices.push_back(Vertex(downRight, right, color));
-                vertices.push_back(Vertex(upLeft, right * (-1), color));
-                vertices.push_back(Vertex(upRight, right, color));
-            }
-        }
-    }
-    {   // generate indices
-        for (int i = 0; i < n - 3; ++i)
-        {
-            int base = i * 4;
-
-            indices.push_back(base);
-            indices.push_back(base + 4 + 2);
-            indices.push_back(base + 4);
-
-            indices.push_back(base);
-            indices.push_back(base + 2);
-            indices.push_back(base + 4 + 2);
-
-
-            indices.push_back(base + 2);
-            indices.push_back(base + 4 + 3);
-            indices.push_back(base + 3);
-
-            indices.push_back(base + 2);
-            indices.push_back(base + 4 + 2);
-            indices.push_back(base + 4 + 3);
-
-
-            indices.push_back(base + 1);
-            indices.push_back(base + 3);
-            indices.push_back(base + 4 + 3);
-
-            indices.push_back(base + 1);
-            indices.push_back(base + 4 + 3);
-            indices.push_back(base + 4 + 1);
-
-
-            indices.push_back(base);
-            indices.push_back(base + 4 + 1);
-            indices.push_back(base + 1);
-
-            indices.push_back(base);
-            indices.push_back(base + 4);
-            indices.push_back(base + 4 + 1);
-        }
-
-    }
-}
+//void HelixBuilder::buildHelix(const std::vector<Vec3>& points, const std::vector<Vec3>& tangentVectors, uint partsPerCurveSegment, std::vector<Vertex>& vertices, std::vector<uint>& indices)
+//{
+//    assert(points.size() >= 3);
+//    assert(points.size() == tangentVectors.size());
+//
+//    uint n = points.size();
+//
+//    vertices.clear();
+//    indices.clear();
+//    vertices.reserve(2 * n);
+//    indices.reserve(6 * (n - 1));
+//
+//    {   // generate vertices
+//        for (int i = 1; i < n - 1; i++)
+//        {
+//            //Vec3 tangent = (points[i + 1] - points[i - 1]).normalized();
+//            Vec3 tangent = tangentVectors[i].normalized();
+//            Vec3 helpVec = (points[i] - points[i - 1]);
+//            Vec3 up = (Vec3::cross(tangent, helpVec)).normalized();
+//            Vec3 right = (Vec3::cross(up, tangent)).normalized();
+//
+//            {
+//                Vec3 downLeft = points[i] - up * height - right * width;
+//                Vec3 downRight = points[i] - up * height + right * width;
+//                Vec3 upLeft = points[i] + up * height - right * width;
+//                Vec3 upRight = points[i] + up * height + right * width;
+//
+//                vertices.push_back(Vertex(downLeft, right * (-1), color));
+//                vertices.push_back(Vertex(downRight, right, color));
+//                vertices.push_back(Vertex(upLeft, right * (-1), color));
+//                vertices.push_back(Vertex(upRight, right, color));
+//            }
+//        }
+//    }
+//    {   // generate indices
+//        for (int i = 0; i < n - 3; ++i)
+//        {
+//            int base = i * 4;
+//
+//            indices.push_back(base);
+//            indices.push_back(base + 4 + 2);
+//            indices.push_back(base + 4);
+//
+//            indices.push_back(base);
+//            indices.push_back(base + 2);
+//            indices.push_back(base + 4 + 2);
+//
+//
+//            indices.push_back(base + 2);
+//            indices.push_back(base + 4 + 3);
+//            indices.push_back(base + 3);
+//
+//            indices.push_back(base + 2);
+//            indices.push_back(base + 4 + 2);
+//            indices.push_back(base + 4 + 3);
+//
+//
+//            indices.push_back(base + 1);
+//            indices.push_back(base + 3);
+//            indices.push_back(base + 4 + 3);
+//
+//            indices.push_back(base + 1);
+//            indices.push_back(base + 4 + 3);
+//            indices.push_back(base + 4 + 1);
+//
+//
+//            indices.push_back(base);
+//            indices.push_back(base + 4 + 1);
+//            indices.push_back(base + 1);
+//
+//            indices.push_back(base);
+//            indices.push_back(base + 4);
+//            indices.push_back(base + 4 + 1);
+//        }
+//
+//    }
+//}
 
 
 
@@ -131,93 +131,93 @@ CoordSystem coordinateSlepr(float t, CoordSystem s1, CoordSystem s2, Vec3 tangen
     };
 }
 
-void HelixBuilder::buildHelix_v2(const std::vector<Vec3>& basePoints, std::vector<Vertex>& vertices, std::vector<uint>& indices)
-{
-    uint n = basePoints.size();
-    int parts = 10;
-
-    for (int i = 1; i < n - 2; ++i)
-    {
-        CoordSystem s1, s2;
-        Vec3 p0 = basePoints[i - 1];
-        Vec3 p1 = basePoints[i];
-        Vec3 p2 = basePoints[i + 1];
-        Vec3 p3 = basePoints[i + 2];
-
-        s1.initFromPoints(p0, p1, p2);
-        s2.initFromPoints(p1, p2, p3);
-
-        std::vector<Vec3> points;
-        std::vector<Vec3> tangents;
-
-        for (int j = 0; j < parts; ++j)
-        {
-            float t = float(j) / float(parts);
-            Vec3 curvePoint = Curve::catmullRom(t, 1.0f, p0, p1, p2, p3);
-            Vec3 curveTangent = Curve::catmullRomTangent(t, 1.0f, p0, p1, p2, p3);
-
-            CoordSystem s = coordinateSlepr(t, s1, s2, curveTangent);
-
-            Vec3 up = s.y;
-            Vec3 right = s.x;
-
-            {
-                Vec3 downLeft = curvePoint - up * height - right * width;
-                Vec3 downRight = curvePoint - up * height + right * width;
-                Vec3 upLeft = curvePoint + up * height - right * width;
-                Vec3 upRight = curvePoint + up * height + right * width;
-
-                vertices.push_back(Vertex(downLeft, right * (-1), color));
-                vertices.push_back(Vertex(downRight, right, color));
-                vertices.push_back(Vertex(upLeft, right * (-1), color));
-                vertices.push_back(Vertex(upRight, right, color));
-            }
-        }
-    }
-
-
-    {   // generate indices
-        for (int i = 0; i < parts * n - 1; ++i)
-        {
-            int base = i * 4;
-
-            indices.push_back(base);
-            indices.push_back(base + 4 + 2);
-            indices.push_back(base + 4);
-
-            indices.push_back(base);
-            indices.push_back(base + 2);
-            indices.push_back(base + 4 + 2);
-
-
-            indices.push_back(base + 2);
-            indices.push_back(base + 4 + 3);
-            indices.push_back(base + 3);
-
-            indices.push_back(base + 2);
-            indices.push_back(base + 4 + 2);
-            indices.push_back(base + 4 + 3);
-
-
-            indices.push_back(base + 1);
-            indices.push_back(base + 3);
-            indices.push_back(base + 4 + 3);
-
-            indices.push_back(base + 1);
-            indices.push_back(base + 4 + 3);
-            indices.push_back(base + 4 + 1);
-
-
-            indices.push_back(base);
-            indices.push_back(base + 4 + 1);
-            indices.push_back(base + 1);
-
-            indices.push_back(base);
-            indices.push_back(base + 4);
-            indices.push_back(base + 4 + 1);
-        }
-    }
-}
+//void HelixBuilder::buildHelix_v2(const std::vector<Vec3>& basePoints, std::vector<Vertex>& vertices, std::vector<uint>& indices)
+//{
+//    uint n = basePoints.size();
+//    int parts = 10;
+//
+//    for (int i = 1; i < n - 2; ++i)
+//    {
+//        CoordSystem s1, s2;
+//        Vec3 p0 = basePoints[i - 1];
+//        Vec3 p1 = basePoints[i];
+//        Vec3 p2 = basePoints[i + 1];
+//        Vec3 p3 = basePoints[i + 2];
+//
+//        s1.initFromPoints(p0, p1, p2);
+//        s2.initFromPoints(p1, p2, p3);
+//
+//        std::vector<Vec3> points;
+//        std::vector<Vec3> tangents;
+//
+//        for (int j = 0; j < parts; ++j)
+//        {
+//            float t = float(j) / float(parts);
+//            Vec3 curvePoint = Curve::catmullRom(t, 1.0f, p0, p1, p2, p3);
+//            Vec3 curveTangent = Curve::catmullRomTangent(t, 1.0f, p0, p1, p2, p3);
+//
+//            CoordSystem s = coordinateSlepr(t, s1, s2, curveTangent);
+//
+//            Vec3 up = s.y;
+//            Vec3 right = s.x;
+//
+//            {
+//                Vec3 downLeft = curvePoint - up * height - right * width;
+//                Vec3 downRight = curvePoint - up * height + right * width;
+//                Vec3 upLeft = curvePoint + up * height - right * width;
+//                Vec3 upRight = curvePoint + up * height + right * width;
+//
+//                vertices.push_back(Vertex(downLeft, right * (-1), color));
+//                vertices.push_back(Vertex(downRight, right, color));
+//                vertices.push_back(Vertex(upLeft, right * (-1), color));
+//                vertices.push_back(Vertex(upRight, right, color));
+//            }
+//        }
+//    }
+//
+//
+//    {   // generate indices
+//        for (int i = 0; i < parts * n - 1; ++i)
+//        {
+//            int base = i * 4;
+//
+//            indices.push_back(base);
+//            indices.push_back(base + 4 + 2);
+//            indices.push_back(base + 4);
+//
+//            indices.push_back(base);
+//            indices.push_back(base + 2);
+//            indices.push_back(base + 4 + 2);
+//
+//
+//            indices.push_back(base + 2);
+//            indices.push_back(base + 4 + 3);
+//            indices.push_back(base + 3);
+//
+//            indices.push_back(base + 2);
+//            indices.push_back(base + 4 + 2);
+//            indices.push_back(base + 4 + 3);
+//
+//
+//            indices.push_back(base + 1);
+//            indices.push_back(base + 3);
+//            indices.push_back(base + 4 + 3);
+//
+//            indices.push_back(base + 1);
+//            indices.push_back(base + 4 + 3);
+//            indices.push_back(base + 4 + 1);
+//
+//
+//            indices.push_back(base);
+//            indices.push_back(base + 4 + 1);
+//            indices.push_back(base + 1);
+//
+//            indices.push_back(base);
+//            indices.push_back(base + 4);
+//            indices.push_back(base + 4 + 1);
+//        }
+//    }
+//}
 
 
 
@@ -262,28 +262,35 @@ void HelixBuilder::buildHelix_v2(const std::vector<Vec3>& basePoints, std::vecto
 //    }
 //}
 
-void HelixBuilder::buildRibbon(const Vec3 pBefore, const std::vector<Vec3>& points, const Vec3 pAfter, std::vector<Vertex>& vertices, std::vector<uint>& indices)
+void HelixBuilder::buildRibbon(const Vec3 pBefore, const std::vector<Vec3>& points, const Vec3 pAfter, std::vector<Vertex>& vertices, std::vector<uint>& indices, bool correctSharpTurns)
 {
     uint n = points.size();
-    int parts = 10;
+    int partsPerCurve = 10;
 
+    CoordSystem s1, s2;
+    s1.initFromPoints(pBefore, points[0], points[1]);
     for (int i = 0; i < n - 1; ++i)
     {
-        CoordSystem s1, s2;
         Vec3 p0 = i == 0 ? pBefore : points[i - 1];
         Vec3 p1 = points[i];
         Vec3 p2 = points[i + 1];
         Vec3 p3 = i == n - 2 ? pAfter : points[i + 2];
 
-        s1.initFromPoints(p0, p1, p2);
+        //s1.initFromPoints(p0, p1, p2);
         s2.initFromPoints(p1, p2, p3);
+        if (correctSharpTurns && Vec3::angleBetweenVectors(s1.x, s2.x) > 0.5 * PI)
+        {
+            s2.x = Vec3::rotate(s2.x, s2.z, PI);
+            s2.y = Vec3::rotate(s2.y, s2.z, PI);
+        }
 
         std::vector<Vec3> points;
         std::vector<Vec3> tangents;
 
-        for (int j = 0; j < parts; ++j)
+        uint m = (i == n - 2) ? partsPerCurve : partsPerCurve - 1; // last part should include vermtices around the last point
+        for (int j = 0; j <= m; ++j)
         {
-            float t = float(j) / float(parts);
+            float t = float(j) / float(partsPerCurve);
             Vec3 curvePoint = Curve::catmullRom(t, 1.0f, p0, p1, p2, p3);
             Vec3 curveTangent = Curve::catmullRomTangent(t, 1.0f, p0, p1, p2, p3);
 
@@ -299,52 +306,56 @@ void HelixBuilder::buildRibbon(const Vec3 pBefore, const std::vector<Vec3>& poin
                 Vec3 upRight = curvePoint + up * height + right * width;
 
                 vertices.push_back(Vertex(downLeft, right * (-1), color));
-                vertices.push_back(Vertex(downRight, right, color));
                 vertices.push_back(Vertex(upLeft, right * (-1), color));
                 vertices.push_back(Vertex(upRight, right, color));
+                vertices.push_back(Vertex(downRight, right, color));
             }
         }
+
+        s1 = s2;
     }
 
 
     {   // generate indices
-        for (int i = 0; i < (parts + 1) * points.size(); ++i)
+        indices.clear();
+        for (int i = 0; i < partsPerCurve * (points.size() - 1) ; ++i)
         {
             int base = i * 4;
              
+            // left
             indices.push_back(base);
             indices.push_back(base + 4);
-            indices.push_back(base + 4 + 2);
+            indices.push_back(base + 5);
 
             indices.push_back(base);
-            indices.push_back(base + 4 + 2);
+            indices.push_back(base + 5);
+            indices.push_back(base + 1);
+
+            //top
+            indices.push_back(base + 1);
+            indices.push_back(base + 5);
+            indices.push_back(base + 6);
+
+            indices.push_back(base + 1);
+            indices.push_back(base + 6);
             indices.push_back(base + 2);
 
-
-            indices.push_back(base + 2);
-            indices.push_back(base + 4 + 3);
+            // right
             indices.push_back(base + 3);
+            indices.push_back(base + 6);
+            indices.push_back(base + 7);
 
-            indices.push_back(base + 2);
-            indices.push_back(base + 4 + 2);
-            indices.push_back(base + 4 + 3);
-
-
-            indices.push_back(base + 1);
             indices.push_back(base + 3);
-            indices.push_back(base + 4 + 3);
+            indices.push_back(base + 2);
+            indices.push_back(base + 6);
 
-            indices.push_back(base + 1);
-            indices.push_back(base + 4 + 3);
-            indices.push_back(base + 4 + 1);
-
-
+            // bottom (todo: isn't it counter clockwise?)
             indices.push_back(base);
-            indices.push_back(base + 1);
-            indices.push_back(base + 4 + 1);
+            indices.push_back(base + 3);
+            indices.push_back(base + 4);
 
-            indices.push_back(base);
-            indices.push_back(base + 4 + 1);
+            indices.push_back(base + 3);
+            indices.push_back(base + 7);
             indices.push_back(base + 4);
         }
     }

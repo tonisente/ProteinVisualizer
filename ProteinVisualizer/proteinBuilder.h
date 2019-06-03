@@ -29,14 +29,14 @@ public:
     void buildProtein(BuildType buildType);
 
 private:
-    void constructWireframe();
-    void constructAlphaHelix();
+    //void constructWireframe();
+    //void constructAlphaHelix();
     void constructTertiary();
 
     /** Puts all vertices and indices from source vertex/index buffer into original vertex/index buffer. */
     void bufferCombinder(const std::vector<Vertex>& srcVertex, const std::vector<uint>& srcIndex);
 
-    std::vector<Vec3> alphaCarbons(const Chain& chain) const;
+    Chain alphaCarbons(const Chain& chain) const;
     std::vector<Vec3> generateExtendedPoints(Vec3 p0, const std::vector<Vec3>& basePoints, Vec3 pn) const;
     void centralizePoints(std::vector<Vertex>& points) const;
     Vec3 getPreviousPoint(const std::vector<Vec3>& points, uint index);

@@ -305,12 +305,12 @@ bool D3D::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hwnd, b
 
     // Setup the raster description which will determine how and what polygons will be drawn.
     rasterDesc.AntialiasedLineEnable = false;
-    rasterDesc.CullMode = D3D11_CULL_NONE;
+    rasterDesc.CullMode = D3D11_CULL_BACK;
     rasterDesc.DepthBias = 0;
     rasterDesc.DepthBiasClamp = 0.0f;
     rasterDesc.DepthClipEnable = true;
     rasterDesc.FillMode = D3D11_FILL_SOLID;
-    rasterDesc.FrontCounterClockwise = true;
+    rasterDesc.FrontCounterClockwise = false;
     rasterDesc.MultisampleEnable = false;
     rasterDesc.ScissorEnable = false;
     rasterDesc.SlopeScaledDepthBias = 0.0f;

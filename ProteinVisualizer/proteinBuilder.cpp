@@ -59,10 +59,6 @@ void ProteinBuilder::buildProtein(BuildType type)
     {
     case BuildType::WIREFRAME:
     case BuildType::CURVEDWIREFRAME:
-    //{
-    //    constructWireframe();
-    //    break;
-    //}
     case BuildType::TERTIARY:
         constructTertiary();
         break;
@@ -71,33 +67,33 @@ void ProteinBuilder::buildProtein(BuildType type)
     centralizePoints(m_vertices);
 }
 
-
-void ProteinBuilder::constructWireframe()
-{
-    const Model& model = m_proteinData.models[0]; // todo: choose which model
-
-    for (int i = 0; i < model.size(); ++i)
-    {   
-        std::vector<Vec3> basePoints = alphaCarbons(model[i]);
-
-        std::vector<Vertex> wireframeVertices;
-        std::vector<uint> wireframeIndices;
-
-        if (m_buildType == BuildType::WIREFRAME)
-        {
-            m_tubeBuilder.buildWireframe(basePoints, wireframeVertices, wireframeIndices);
-        }
-        else if (m_buildType == BuildType::CURVEDWIREFRAME)
-        {
-            Vec3 p0 = getPreviousPoint(basePoints, 0);
-            Vec3 pn = getNextPoint(basePoints, basePoints.size() - 1);
-            std::vector<Vec3> extendedPoints = generateExtendedPoints(p0, basePoints, pn);
-            m_tubeBuilder.buildWireframe(extendedPoints, wireframeVertices, wireframeIndices);
-        }
-
-        bufferCombinder(wireframeVertices, wireframeIndices);
-    }
-}
+//
+//void ProteinBuilder::constructWireframe()
+//{
+//    const Model& model = m_proteinData.models[0]; // todo: choose which model
+//
+//    for (int i = 0; i < model.size(); ++i)
+//    {   
+//        std::vector<Vec3> basePoints = alphaCarbons(model[i]);
+//
+//        std::vector<Vertex> wireframeVertices;
+//        std::vector<uint> wireframeIndices;
+//
+//        if (m_buildType == BuildType::WIREFRAME)
+//        {
+//            m_tubeBuilder.buildWireframe(basePoints, wireframeVertices, wireframeIndices);
+//        }
+//        else if (m_buildType == BuildType::CURVEDWIREFRAME)
+//        {
+//            Vec3 p0 = getPreviousPoint(basePoints, 0);
+//            Vec3 pn = getNextPoint(basePoints, basePoints.size() - 1);
+//            std::vector<Vec3> extendedPoints = generateExtendedPoints(p0, basePoints, pn);
+//            m_tubeBuilder.buildWireframe(extendedPoints, wireframeVertices, wireframeIndices);
+//        }
+//
+//        bufferCombinder(wireframeVertices, wireframeIndices);
+//    }
+//}
 
 
 void ProteinBuilder::constructTertiary()
@@ -136,7 +132,7 @@ void ProteinBuilder::constructTertiary()
                 Vec3 pn = getNextPoint(basePoints, helixEnd);
                 std::vector<Vec3> subPoints(basePoints.begin() + helixStart, basePoints.begin() + helixEnd + 1);
 
-                m_helixBuilder.buildRibbon(p0, subPoints, pn, tempVertexBuffer, tempIndexBuffer);
+                m_helixBuilder.buildRibbon(p0, subPoints, pn, tempVertexBuffer, tempIndexBuffer, false);
 
                 bufferCombinder(tempVertexBuffer, tempIndexBuffer);
                 begginingAndEndings.emplace_back(std::make_pair(helixStart, helixEnd));
@@ -155,11 +151,12 @@ void ProteinBuilder::constructTertiary()
 
                 Vec3 p0 = getPreviousPoint(basePoints, sheetStart);
                 Vec3 pn = getNextPoint(basePoints, sheetEnd);
-                std::vector<Vec3> subPoints(basePoints.begin() + sheetStart, basePoints.begin() + sheetEnd);
+                std::vector<Vec3> subPoints(basePoints.begin() + sheetStart, basePoints.begin() + sheetEnd + 1);
 
-                m_helixBuilder.buildRibbon(p0, subPoints, pn, tempVertexBuffer, tempIndexBuffer);
+                m_helixBuilder.color = { 1.0f, 1.0f, 0.2f };
+                m_helixBuilder.buildRibbon(p0, subPoints, pn, tempVertexBuffer, tempIndexBuffer, true);
 
-                //bufferCombinder(tempVertexBuffer, tempIndexBuffer);
+                bufferCombinder(tempVertexBuffer, tempIndexBuffer);
                 begginingAndEndings.emplace_back(std::make_pair(sheetStart, sheetEnd));
             }
         }
@@ -176,9 +173,13 @@ void ProteinBuilder::constructTertiary()
                 uint constructStart = begginingAndEndings[i].first;
                 uint constructEnd = begginingAndEndings[i].second;
 
-                if (startIdx == constructStart) continue;
+                if (startIdx == constructStart)
+                {
+                    startIdx = constructEnd;
+                    continue;
+                }
 
-                std::vector<Vec3> subPoints(basePoints.begin() + startIdx, basePoints.begin() + constructStart);
+                std::vector<Vec3> subPoints(basePoints.begin() + startIdx, basePoints.begin() + constructStart + 1);
                 Vec3 p0 = getPreviousPoint(basePoints, startIdx);
                 Vec3 pn = getNextPoint(basePoints, constructStart);
                 m_tubeBuilder.buildWireframe(generateExtendedPoints(p0, subPoints, pn) , tempVertexBuffer, tempIndexBuffer);
@@ -218,20 +219,20 @@ void ProteinBuilder::bufferCombinder(const std::vector<Vertex>& srcVertex, const
 }
 
 
-std::vector<Vec3> ProteinBuilder::alphaCarbons(const Chain& chain) const
+Chain ProteinBuilder::alphaCarbons(const Chain& chain) const
 {
-    std::vector<Vec3> atomPositions;
-    atomPositions.reserve(128);
+    Chain alphaC;
+    alphaC.reserve(128);
 
-    for (const Atom atom : chain)
+    for (const Atom& atom : chain)
     {
         if (strcmp("CA", atom.name) == 0)
         {
-            atomPositions.push_back(Vec3(atom.xCoord, atom.yCoord, atom.zCoord));
+            alphaC.push_back(atom);
         }
     }
 
-    return atomPositions;
+    return alphaC;
 }
 
 
@@ -328,5 +329,20 @@ Vec3 ProteinBuilder::getNextPoint(const std::vector<Vec3>& points, uint index)
     {
         return points[index] * 2 - points[index - 1];
     }
+}
+
+
+int residueIndex(const std::vector<Vec3>& points, uint residueSeqNumber)
+{
+    int lo = 0; 
+    int hi = points.size();
+
+    while (lo < hi)
+    {
+        if (lo == hi && points[lo])
+    }
+
+
+    return -1;
 }
 

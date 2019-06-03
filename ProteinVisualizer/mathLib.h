@@ -32,6 +32,7 @@ struct Vec3
     void print();
     float norm() const;
     DirectX::XMFLOAT3 toXMFLOAT3();
+    static float angleBetweenVectors(const Vec3 a, const Vec3 b);
 };
 
 

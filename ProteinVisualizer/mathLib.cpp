@@ -95,6 +95,13 @@ DirectX::XMFLOAT3 Vec3::toXMFLOAT3()
     return { x, y, z };
 }
 
+float Vec3::angleBetweenVectors(const Vec3 a, const Vec3 b)
+{
+    float cosFi = (a.x * b.x + a.y * b.y + a.z * b.z) / (a.norm() * b.norm());
+
+    return acos(cosFi);
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////
 
 Line::Line(Vec3 direction, Vec3 startingPoint) :
