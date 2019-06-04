@@ -38,15 +38,6 @@ ProteinData PDBParser::parse(const std::string& filename)
         {
             Atom atom = parseAtom(line);
             chain.push_back(atom);
-            //if (atom.altLocationIndicator == ' ' || atom.altLocationIndicator == 'A')
-            //{
-            //    chain.push_back(atom);
-            //}
-            if (strcmp("CA", atom.name) == 0 && atom.altLocationIndicator != ' ' && atom.altLocationIndicator != 'A')
-            {
-                // todo:
-                int a = 5 * 5;
-            }
         }
         else if (!line.rfind("TER", 0))
         {

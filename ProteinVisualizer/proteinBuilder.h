@@ -41,6 +41,7 @@ private:
     void centralizePoints(std::vector<Vertex>& points) const;
     Vec3 getPreviousPoint(const std::vector<Vec3>& points, uint index);
     Vec3 getNextPoint(const std::vector<Vec3>& points, uint index); 
+    int residueIndex(const Chain& chain, uint residueSeqNumber);
 
     const ProteinData& m_proteinData;
     std::vector<Vertex>& m_vertices;
