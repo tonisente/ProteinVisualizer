@@ -19,7 +19,7 @@ class Camera
 public:
     const float ROTATION_FACTOR = 0.01f;
     const float ZOOM_FACTOR = 0.1f;
-    const float TRANSLATION_FACTOR = 0.01f;
+    const float TRANSLATION_FACTOR = 0.03f;
 
     Camera();
     Camera(const Camera&);

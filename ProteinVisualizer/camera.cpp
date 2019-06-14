@@ -151,7 +151,7 @@ void Camera::Translate(DirectX::XMINT2 mouseDelta)
 
     m_positionX += delta.x;
     m_positionY += delta.y;
-    m_positionX += delta.z;
+    m_positionZ += delta.z;
 
     m_focusPoint = addVectors(m_focusPoint, delta);
 }
