@@ -265,7 +265,6 @@ CoordSystem coordinateSlepr(float t, CoordSystem s1, CoordSystem s2, Vec3 tangen
 void HelixBuilder::buildRibbon(const Vec3 pBefore, const std::vector<Vec3>& points, const Vec3 pAfter, std::vector<Vertex>& vertices, std::vector<uint>& indices, bool correctSharpTurns)
 {
     uint n = points.size();
-    int partsPerCurve = 10;
 
     CoordSystem s1, s2;
     s1.initFromPoints(pBefore, points[0], points[1]);
@@ -278,19 +277,27 @@ void HelixBuilder::buildRibbon(const Vec3 pBefore, const std::vector<Vec3>& poin
 
         //s1.initFromPoints(p0, p1, p2);
         s2.initFromPoints(p1, p2, p3);
+
+        // sheet fix 
         if (correctSharpTurns && Vec3::angleBetweenVectors(s1.x, s2.x) > 0.5 * PI)
         {
             s2.x = Vec3::rotate(s2.x, s2.z, PI);
             s2.y = Vec3::rotate(s2.y, s2.z, PI);
         }
+        // helix fix
+        //else if (correctSharpTurns && Vec3::angleBetweenVectors(s1.x, s2.x) > 0)
+        //{
+        //    s2.x = Vec3::rotate(s2.x, s2.z, PI);
+        //    s2.y = Vec3::rotate(s2.y, s2.z, PI);
+        //}
 
         std::vector<Vec3> points;
         std::vector<Vec3> tangents;
 
-        uint m = (i == n - 2) ? partsPerCurve : partsPerCurve - 1; // last part should include vermtices around the last point
+        uint m = (i == n - 2) ? ppSegment : ppSegment - 1; // last part should include vermtices around the last point
         for (int j = 0; j <= m; ++j)
         {
-            float t = float(j) / float(partsPerCurve);
+            float t = float(j) / float(ppSegment);
             Vec3 curvePoint = Curve::catmullRom(t, 1.0f, p0, p1, p2, p3);
             Vec3 curveTangent = Curve::catmullRomTangent(t, 1.0f, p0, p1, p2, p3);
 
@@ -318,7 +325,7 @@ void HelixBuilder::buildRibbon(const Vec3 pBefore, const std::vector<Vec3>& poin
 
     {   // generate indices
         indices.clear();
-        for (int i = 0; i < partsPerCurve * (points.size() - 1) ; ++i)
+        for (int i = 0; i < ppSegment * (points.size() - 1) ; ++i)
         {
             int base = i * 4;
              

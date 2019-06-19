@@ -131,8 +131,8 @@ Atom PDBParser::parseAtom(const std::string& line)
     strcpy(atom.elementSymbol, buffer);
 
     // reverse point (crystallography?!)
-    atom.xCoord = -atom.xCoord;
-    atom.yCoord = -atom.yCoord;
+    //atom.xCoord = -atom.xCoord;
+    //atom.yCoord = -atom.yCoord;
     atom.zCoord = -atom.zCoord;
 
     return atom;

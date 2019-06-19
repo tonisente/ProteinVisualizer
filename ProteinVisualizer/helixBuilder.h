@@ -14,9 +14,9 @@ public:
     ~HelixBuilder();
 
     /** Parts per 1 curve segment between two base points. */
-    uint ppSegment = 6;
+    uint ppSegment = 15;
     float width = 0.1f;
-    float height = 1.0f;
+    float height = 1.15f;
     Vec3 color{ 1.0f, 0.3f, 0.3f };
 
     //void buildHelix(const std::vector<Vec3>& points, const std::vector<Vec3>& tangentVectors, uint partsPerCurveSegment, std::vector<Vertex>& vertices, std::vector<uint>& indices);

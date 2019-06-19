@@ -15,8 +15,8 @@ public:
     TubeBuilder(unsigned int noSides, float thicknes);
     ~TubeBuilder();
 
-    unsigned int sides = 16;
-    float thicknes = 0.2f;
+    unsigned int sides = 20;
+    float tubeThicknes = 0.2f;
     Vec3 color{ 1.0f, 1.0f, 1.0f };
 
     void buildWireframe(const std::vector<Vec3>& atoms, std::vector<Vertex>& vertices, std::vector<uint>& indices) const;

@@ -8,7 +8,7 @@ TubeBuilder::TubeBuilder()
 
 TubeBuilder::TubeBuilder(uint noSides, float thicknes):
     sides{ noSides },
-    thicknes{ thicknes }
+    tubeThicknes{ thicknes }
 {
 }
 
@@ -111,7 +111,7 @@ std::vector<Vertex> TubeBuilder::baseTubePoints(const Vec3& p0, const Vec3& p1) 
     {
         float rotationDegree = ((float)j / (float)sides) * (2.0f * PI);
         Vec3 rotatedVec = Vec3::rotate(radiusVec, centralVec, rotationDegree);
-        Vec3 point{ rotatedVec * thicknes + p0 };
+        Vec3 point{ rotatedVec * tubeThicknes + p0 };
         Vertex v{ point, (point - p0).normalized(), color };
         vertices.emplace_back(v);
     }

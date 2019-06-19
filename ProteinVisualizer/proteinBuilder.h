@@ -29,7 +29,7 @@ public:
     void buildProtein(BuildType buildType);
 
 private:
-    //void constructWireframe();
+    void constructWireframe();
     //void constructAlphaHelix();
     void constructTertiary();
 
