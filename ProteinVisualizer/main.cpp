@@ -1,12 +1,19 @@
 #pragma once
 #include "system.h"
+#include "inputParameterParser.h"
 
 #include <windows.h>
+
+std::string __proteinFilename = "Toni";
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline, int iCmdshow)
 {
     System* system;
     bool result;
+    InputParameterParser inputParser;
+
+    // parse input parameters
+    inputParser.parse(pScmdline);
 
     // Create the system object.
     system = new System;
@@ -16,7 +23,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline,
     }
 
     // Initialize and run the system object.
-    result = system->Initialize();
+    result = system->Initialize(pScmdline);
     if (result)
     {
         system->Run();
@@ -26,6 +33,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline,
     system->Shutdown();
     delete system;
     system = 0;
+
 
     return 0;
 }

@@ -19,11 +19,16 @@ System::~System()
 {
 }
 
-bool System::Initialize()
+bool System::Initialize(PSTR pScmdline)
 {
     int screenWidth, screenHeight;
     bool result;
 
+    // debug
+    std::string tempString(pScmdline);
+    std::wstring tempWString = std::wstring(tempString.begin(), tempString.end());
+    LPCWSTR message = tempWString.c_str();
+    MessageBox(m_hwnd, message, L"info", MB_OK);
 
     // Initialize the width and height of the screen to zero before sending the variables into the function.
     screenWidth = 0;

@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.28307.572
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ProteinVisualizer", "ProteinVisualizer\ProteinVisualizer.vcxproj", "{871B2BAF-F353-4C8F-B598-79F63D6D0C99}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CurveTest", "CurveTest\CurveTest.vcxproj", "{9526CC3C-BA91-4FA9-A1CA-88469FF5829D}"
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup", "Setup\Setup.vdproj", "{C8995744-F452-410B-82D2-BABD4D177FC7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,14 +23,10 @@ Global
 		{871B2BAF-F353-4C8F-B598-79F63D6D0C99}.Release|x64.Build.0 = Release|x64
 		{871B2BAF-F353-4C8F-B598-79F63D6D0C99}.Release|x86.ActiveCfg = Release|Win32
 		{871B2BAF-F353-4C8F-B598-79F63D6D0C99}.Release|x86.Build.0 = Release|Win32
-		{9526CC3C-BA91-4FA9-A1CA-88469FF5829D}.Debug|x64.ActiveCfg = Debug|x64
-		{9526CC3C-BA91-4FA9-A1CA-88469FF5829D}.Debug|x64.Build.0 = Debug|x64
-		{9526CC3C-BA91-4FA9-A1CA-88469FF5829D}.Debug|x86.ActiveCfg = Debug|Win32
-		{9526CC3C-BA91-4FA9-A1CA-88469FF5829D}.Debug|x86.Build.0 = Debug|Win32
-		{9526CC3C-BA91-4FA9-A1CA-88469FF5829D}.Release|x64.ActiveCfg = Release|x64
-		{9526CC3C-BA91-4FA9-A1CA-88469FF5829D}.Release|x64.Build.0 = Release|x64
-		{9526CC3C-BA91-4FA9-A1CA-88469FF5829D}.Release|x86.ActiveCfg = Release|Win32
-		{9526CC3C-BA91-4FA9-A1CA-88469FF5829D}.Release|x86.Build.0 = Release|Win32
+		{C8995744-F452-410B-82D2-BABD4D177FC7}.Debug|x64.ActiveCfg = Debug
+		{C8995744-F452-410B-82D2-BABD4D177FC7}.Debug|x86.ActiveCfg = Debug
+		{C8995744-F452-410B-82D2-BABD4D177FC7}.Release|x64.ActiveCfg = Release
+		{C8995744-F452-410B-82D2-BABD4D177FC7}.Release|x86.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

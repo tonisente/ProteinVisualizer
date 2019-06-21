@@ -7,6 +7,10 @@
 #include "proteinModel.h"
 #include "mathLib.h"
 #include "curve.h"
+#include "inputVariables.h"
+
+extern std::string __proteinFilename;
+
 
 ProteinModel::ProteinModel()
 {
@@ -78,7 +82,7 @@ bool ProteinModel::InitializeBuffers(ID3D11Device* device)
         //ProteinData proteinData = parser.parse("helixTest6hl1.pdb"); // ok
         //ProteinData proteinData = parser.parse("wireframeTest3.txt"); // ok
         //ProteinData proteinData = parser.parse("complete_5zsy.pdb"); // 
-        ProteinData proteinData = parser.parse("complete_6nuk.pdb"); // 
+        ProteinData proteinData = parser.parse(__proteinFilename); // 
 
 
         std::vector<Vertex> generatedVertecis;

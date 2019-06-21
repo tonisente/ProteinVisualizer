@@ -28,7 +28,7 @@ public:
     System(const System&);
     ~System();
 
-    bool Initialize();
+    bool Initialize(PSTR pScmdline);
     void Shutdown();
     void Run();
 

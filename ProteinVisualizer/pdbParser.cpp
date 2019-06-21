@@ -15,7 +15,7 @@ PDBParser& PDBParser::getInstance()
  
 ProteinData PDBParser::parse(const std::string& filename)
 {
-    std::string combinedPath = pathToModels + filename;
+    std::string combinedPath = filename; // pathToModels + filename;
     std::ifstream fin;
     fin.open(combinedPath);
     if (!fin)
@@ -83,14 +83,14 @@ Atom PDBParser::parseAtom(const std::string& line)
 
     // atom name
     trimSpace(line, 12, 15, buffer);
-    strcpy(atom.name, buffer);
+    strcpy_s(atom.name, buffer);
 
     // alternate location indicator
     atom.altLocationIndicator = line[16];
 
     // residue name
     trimSpace(line, 17, 19, buffer);
-    strcpy(atom.residueName, buffer);
+    strcpy_s(atom.residueName, buffer);
 
     // chain identifier
     atom.chainID = line[21];
@@ -124,11 +124,11 @@ Atom PDBParser::parseAtom(const std::string& line)
 
     // segment identifier
     trimSpace(line, 72, 75, buffer);
-    strcpy(atom.segmentID, buffer);
+    strcpy_s(atom.segmentID, buffer);
 
     // element symbol
     trimSpace(line, 76, 77, buffer);
-    strcpy(atom.elementSymbol, buffer);
+    strcpy_s(atom.elementSymbol, buffer);
 
     // reverse point (crystallography?!)
     //atom.xCoord = -atom.xCoord;
@@ -150,11 +150,11 @@ Helix PDBParser::parseHelix(const std::string& line)
 
     // helix ID
     trimSpace(line, 11, 13, buffer);
-    strcpy(helix.ID, buffer);
+    strcpy_s(helix.ID, buffer);
 
     // initial residue name
     trimSpace(line, 15, 17, buffer);
-    strcpy(helix.initialResidueName, buffer);
+    strcpy_s(helix.initialResidueName, buffer);
 
     // chain identifier
     helix.chainID = line[19];
@@ -168,7 +168,7 @@ Helix PDBParser::parseHelix(const std::string& line)
 
     // terminal residue name
     trimSpace(line, 27, 29, buffer);
-    strcpy(helix.terminalResidueName, buffer);
+    strcpy_s(helix.terminalResidueName, buffer);
 
     // chain identifier
     helix.chainID2 = line[31];
@@ -186,7 +186,7 @@ Helix PDBParser::parseHelix(const std::string& line)
 
     // comment
     trimSpace(line, 40, 69, buffer);
-    strcpy(helix.comment, buffer);
+    strcpy_s(helix.comment, buffer);
 
     // length of helix
     trimSpace(line, 71, 75, buffer);
