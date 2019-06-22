@@ -1,5 +1,6 @@
 #include "MathLib.h"
 
+#include <cstdlib>
 
 Vec3::Vec3()
 {}
@@ -9,6 +10,11 @@ Vec3::Vec3(const float a, const float b, const float c) :
     y{ b },
     z{ c }
 {
+}
+
+Vec3::Vec3(std::string params)
+{
+    sscanf_s(params.c_str(), "%f,%f,%f", &x, &y, &z);
 }
 
 Vec3 Vec3::operator=(const Vec3& other)

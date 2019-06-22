@@ -13,6 +13,7 @@ public:
 
 private:
     static std::vector<std::string> splitParams(std::string const &input);
-
+    static void trim(std::string& line);
+    static bool equal(const std::string& a, const std::string& b);
 };
 

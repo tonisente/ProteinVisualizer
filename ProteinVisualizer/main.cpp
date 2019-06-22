@@ -1,6 +1,5 @@
 #pragma once
 #include "system.h"
-#include "inputParameterParser.h"
 
 #include <windows.h>
 
@@ -10,10 +9,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline,
 {
     System* system;
     bool result;
-    InputParameterParser inputParser;
-
-    // parse input parameters
-    inputParser.parse(pScmdline);
 
     // Create the system object.
     system = new System;

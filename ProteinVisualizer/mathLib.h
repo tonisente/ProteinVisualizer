@@ -4,6 +4,7 @@
 #include <cassert>
 #include <cstdio>
 #include <DirectXMath.h>
+#include <string>
 
 constexpr double PI = 3.14159265358979323846;
 constexpr double DELTA = 1e-7;
@@ -15,6 +16,7 @@ struct Vec3
     float z;
 
     Vec3();
+    Vec3(std::string);
     Vec3(const float a, const float b, const float c);
 
     Vec3 operator=(const Vec3& other);

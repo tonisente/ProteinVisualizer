@@ -15,7 +15,7 @@ PDBParser& PDBParser::getInstance()
  
 ProteinData PDBParser::parse(const std::string& filename)
 {
-    std::string combinedPath = filename; // pathToModels + filename;
+    std::string combinedPath = pathToModels + filename;
     std::ifstream fin;
     fin.open(combinedPath);
     if (!fin)
@@ -306,7 +306,7 @@ void PDBParser::trimSpace(const std::string& line, int startIdx, int endIdx, cha
         }
     }
 
-    // copy string
+    // copy string (todo: std::copy or something?!)
     int j = 0;
     for (int i = startIdx; i <= endIdx; ++i)
     {
