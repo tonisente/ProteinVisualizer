@@ -2,6 +2,9 @@
 
 #include <algorithm>
 
+extern Vec3 __helixRGB;
+extern Vec3 __sheetRGB;
+extern Vec3 __wireRGB;
 
 ProteinBuilder::ProteinBuilder(const ProteinData& proteinData, std::vector<Vertex>& vertices, std::vector<uint>& indices):
     m_proteinData{ proteinData },
@@ -158,7 +161,7 @@ void ProteinBuilder::constructTertiary()
                 Vec3 pn = getNextPoint(alphaPoints, helixEndIdx);
                 std::vector<Vec3> subPoints(alphaPoints.begin() + helixStartIdx, alphaPoints.begin() + helixEndIdx + 1);
 
-                m_helixBuilder.color = { 1.0f, 0.3f, 0.3f };
+                m_helixBuilder.color = __helixRGB;
                 m_helixBuilder.buildRibbon(p0, subPoints, pn, tempVertexBuffer, tempIndexBuffer, false);
 
                 bufferCombinder(tempVertexBuffer, tempIndexBuffer);
@@ -183,7 +186,7 @@ void ProteinBuilder::constructTertiary()
                 Vec3 pn = getNextPoint(alphaPoints, sheetEndIdx);
                 std::vector<Vec3> subPoints(alphaPoints.begin() + sheetStartIdx, alphaPoints.begin() + sheetEndIdx + 1);
 
-                m_helixBuilder.color = { 1.0f, 1.0f, 0.2f };
+                m_helixBuilder.color = __sheetRGB;
                 m_helixBuilder.buildRibbon(p0, subPoints, pn, tempVertexBuffer, tempIndexBuffer, true);
 
                 bufferCombinder(tempVertexBuffer, tempIndexBuffer);

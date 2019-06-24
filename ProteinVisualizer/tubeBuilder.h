@@ -19,7 +19,7 @@ public:
     float tubeThicknes = 0.2f;
     Vec3 color{ 1.0f, 1.0f, 1.0f };
 
-    void buildWireframe(const std::vector<Vec3>& atoms, std::vector<Vertex>& vertices, std::vector<uint>& indices) const;
+    void buildWireframe(const std::vector<Vec3>& atoms, std::vector<Vertex>& vertices, std::vector<uint>& indices);
 
 private:
     std::vector<Vertex> nextTubePoints(const std::vector<Vertex>& previousPoints, const Vec3& p0, const Vec3& p1, const Vec3& outVec = { 0.0f, 0.0f, 0.0f }) const;

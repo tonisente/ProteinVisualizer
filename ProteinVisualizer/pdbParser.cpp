@@ -5,7 +5,8 @@
 #include <sstream>
 #include <string>
 
-const std::string PDBParser::pathToModels = "ProteinModels/";
+//const std::string PDBParser::pathToModels = "ProteinModels/";
+
 
 PDBParser& PDBParser::getInstance()
 {
@@ -15,7 +16,7 @@ PDBParser& PDBParser::getInstance()
  
 ProteinData PDBParser::parse(const std::string& filename)
 {
-    std::string combinedPath = pathToModels + filename;
+    std::string combinedPath = filename; //pathToModels + filename;
     std::ifstream fin;
     fin.open(combinedPath);
     if (!fin)

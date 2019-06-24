@@ -18,9 +18,12 @@ TubeBuilder::~TubeBuilder()
 }
 
 
-void TubeBuilder::buildWireframe(const std::vector<Vec3>& points, std::vector<Vertex>& vertices, std::vector<uint>& indices) const
+void TubeBuilder::buildWireframe(const std::vector<Vec3>& points, std::vector<Vertex>& vertices, std::vector<uint>& indices)
 {
     if (points.size() == 0) return;
+
+    extern Vec3 __wireRGB;
+    color = __wireRGB;
 
     uint n = points.size();
     vertices.clear();

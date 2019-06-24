@@ -9,6 +9,8 @@ typedef unsigned int uint;
 extern std::string __proteinFilename;
 extern Vec3 __helixRGB;
 extern Vec3 __sheetRGB;
+extern Vec3 __wireRGB;
+extern uint __type;
 
 
 InputParameterParser::InputParameterParser()
@@ -92,10 +94,24 @@ bool InputParameterParser::parse(const char* input) const
             Vec3 color{ paramValue };
             __helixRGB = color;
         }
-        if (equal(paramType, "sheetRGB"))
+        else if (equal(paramType, "sheetRGB"))
         {
             Vec3 color{ paramValue };
             __sheetRGB = color;
+        }
+        else if (equal(paramType, "wireRGB"))
+        {
+            Vec3 color{ paramValue };
+            __wireRGB = color;
+        }
+        else if (equal(paramType, "type"))
+        {
+            uint type = atoi(paramValue.c_str());
+            if (type < 1 || type > 3)
+            {
+                return false;
+            }
+            __type = type;
         }
         else 
         {

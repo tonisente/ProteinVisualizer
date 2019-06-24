@@ -10,7 +10,7 @@
 #include "inputVariables.h"
 
 extern std::string __proteinFilename;
-
+extern uint __type;
 
 ProteinModel::ProteinModel()
 {
@@ -84,12 +84,27 @@ bool ProteinModel::InitializeBuffers(ID3D11Device* device)
         //ProteinData proteinData = parser.parse("complete_5zsy.pdb"); // 
         ProteinData proteinData = parser.parse(__proteinFilename); // 
 
-
         std::vector<Vertex> generatedVertecis;
         std::vector<unsigned int> generatedIndices;
 
         ProteinBuilder proteinBuilder{ proteinData, generatedVertecis, generatedIndices };
-        proteinBuilder.buildProtein(ProteinBuilder::BuildType::TERTIARY);
+        
+        ProteinBuilder::BuildType buildType;
+        switch (__type)
+        {
+        case 1:
+            buildType = ProteinBuilder::BuildType::TERTIARY;
+            break;
+        case 2:
+            buildType = ProteinBuilder::BuildType::CURVEDWIREFRAME;
+            break;
+        case 3:
+            buildType = ProteinBuilder::BuildType::WIREFRAME;
+            break;
+        default:
+            buildType = ProteinBuilder::BuildType::TERTIARY;            
+        }
+        proteinBuilder.buildProtein(buildType);
 
         m_vertexCount = generatedVertecis.size();
         m_indexCount = generatedIndices.size();
