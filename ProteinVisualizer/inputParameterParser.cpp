@@ -7,6 +7,8 @@
 typedef unsigned int uint;
 
 extern std::string __proteinFilename;
+extern Vec3 __helixRGB;
+extern Vec3 __sheetRGB;
 
 
 InputParameterParser::InputParameterParser()
@@ -88,8 +90,17 @@ bool InputParameterParser::parse(const char* input) const
         if (equal(paramType, "helixRGB"))
         {
             Vec3 color{ paramValue };
+            __helixRGB = color;
         }
-
+        if (equal(paramType, "sheetRGB"))
+        {
+            Vec3 color{ paramValue };
+            __sheetRGB = color;
+        }
+        else 
+        {
+            return false;
+        }
     }
 
     return true;

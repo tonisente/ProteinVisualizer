@@ -3,7 +3,9 @@
 
 #include <windows.h>
 
-std::string __proteinFilename = "Toni";
+std::string __proteinFilename;
+Vec3 __helixRGB{ 1.0f, 0.3f, 0.3f };
+Vec3 __sheetRGB{ 1.0f, 1.0f, 0.3f };
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline, int iCmdshow)
 {
